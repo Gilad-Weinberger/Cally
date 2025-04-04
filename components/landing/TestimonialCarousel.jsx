@@ -79,7 +79,7 @@ const TestimonialCarousel = () => {
   };
 
   return (
-    <div className="w-full overflow-hidden bg-white py-10">
+    <div className="w-full overflow-hidden bg-to-blue-50 py-10">
       <div className="container mx-auto px-4">
         <h2 className="mb-8 text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
           What Our Users Say

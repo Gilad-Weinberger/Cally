@@ -6,10 +6,11 @@ import { useAuth } from '@/context/AuthContext';
 import AuthButton from '@/components/auth/AuthButton';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import TestimonialCarousel from '@/components/TestimonialCarousel';
+import TestimonialCarousel from '@/components/landing/TestimonialCarousel';
 import PrimaryButton from '@/components/PrimaryButton';
 import SecondaryButton from '@/components/SecondaryButton';
 import YourAICalendar from '@/components/YourAICalendar';
+import PricingSection from '@/components/pricing/PricingSection';
 
 export default function Home() {
   const { user } = useAuth();
@@ -60,7 +61,7 @@ export default function Home() {
       </section>
 
       {/* Problem/Solution Section */}
-      <section className="bg-white py-16 md:py-24" id="problem-solution">
+      <section className="bg-to-blue-50 py-16 md:py-24" id="problem-solution">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="mb-8 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -135,7 +136,7 @@ export default function Home() {
         </div>
       </section>
       {/* Features Section */}
-      <section className="py-16 md:py-24" id="features">
+      <section className="py-16 md:py-24 bg-white" id="features">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -236,8 +237,13 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="bg-white py-16 md:py-24" id="testimonials">
+      <section className="bg-to-blue-50 py-16 md:py-24" id="testimonials">
         <TestimonialCarousel />
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing">
+        <PricingSection />
       </section>
       </div>
       <Footer />
