@@ -27,11 +27,6 @@ const Page = () => {
   const [editColor, setEditColor] = useState("");
 
   useEffect(() => {
-    if (!user) {
-      router.push("/signin"); // Redirect to sign-in if no user
-      return;
-    }
-
     const fetchColorCodes = async () => {
       try {
         const colorCodesRef = collection(db, "colorCodes");

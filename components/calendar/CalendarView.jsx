@@ -5,6 +5,11 @@ import React, { useState, useEffect } from "react";
 export default function CalendarView({ events, onEventClick, isLoading }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState("month");
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const hours = Array.from({ length: 24 }, (_, i) => {
+    return `${i.toString().padStart(2, "0")}:00`;
+  });
 
   // Function to determine text color based on background color brightness
   const getContrastColor = (hexColor) => {
@@ -71,9 +76,15 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
     const days = [];
 
     for (let i = firstDay - 1; i >= 0; i--) {
+      const dayDate = new Date(
+        date.getFullYear(),
+        date.getMonth() - 1,
+        prevMonthLastDay - i
+      );
       days.push({
         date: prevMonthLastDay - i,
         isCurrentMonth: false,
+        fullDate: dayDate
       });
     }
     return days;
@@ -81,10 +92,18 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
 
   const getCurrentMonthDays = (date) => {
     const daysInMonth = getDaysInMonth(date);
-    return Array.from({ length: daysInMonth }, (_, i) => ({
-      date: i + 1,
-      isCurrentMonth: true,
-    }));
+    return Array.from({ length: daysInMonth }, (_, i) => {
+      const dayDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        i + 1
+      );
+      return {
+        date: i + 1,
+        isCurrentMonth: true,
+        fullDate: dayDate
+      };
+    });
   };
 
   const getNextMonthDays = (date) => {
@@ -102,10 +121,18 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
 
     const extraDays = needsSixRows ? 7 - nextDays : 0;
 
-    return Array.from({ length: nextDays + extraDays }, (_, i) => ({
-      date: i + 1,
-      isCurrentMonth: false,
-    }));
+    return Array.from({ length: nextDays + extraDays }, (_, i) => {
+      const dayDate = new Date(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        i + 1
+      );
+      return {
+        date: i + 1,
+        isCurrentMonth: false,
+        fullDate: dayDate
+      };
+    });
   };
 
   const days = [
@@ -114,7 +141,6 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
     ...getNextMonthDays(currentDate),
   ];
 
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const getViewDays = () => {
     switch (viewMode) {
@@ -134,6 +160,8 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
         return days;
     }
   };
+
+  const viewDays = getViewDays();
 
   const navigateView = (direction) => {
     const newDate = new Date(currentDate);
@@ -236,11 +264,40 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
       });
   };
 
-  const viewDays = getViewDays();
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === '.') {
+        setIsSearchModalOpen(!isSearchModalOpen);
+      }
+    };
+  
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, [isSearchModalOpen]);
 
-  const hours = Array.from({ length: 24 }, (_, i) => {
-    return `${i.toString().padStart(2, "0")}:00`;
-  });
+  const handleDateSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/parse-date', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ dateText: e.target.date.value }),
+      });
+
+      const data = await response.json();
+      // No need to validate as API will return today's date as fallback in case of invalid input
+
+      const searchDate = new Date(data.date);
+      setCurrentDate(searchDate);
+      setIsSearchModalOpen(false);
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      e.target.date.setCustomValidity('Failed to parse date');
+      e.target.date.reportValidity();
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow p-4 h-[calc(100vh-160px)] flex flex-col relative">
@@ -305,7 +362,6 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
           </button>
         </div>
       </div>
-
       <div className="flex-1 overflow-hidden">
         {viewMode === "week" ? (
           <div className="h-full">
@@ -363,59 +419,46 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
                               className="border p-2 relative bg-white"
                             >
                               {hourEvents.map((event, idx) => {
-                                const [startHour, startMinute] =
-                                  event.startTime.split(":");
+                                const [startHour, startMinute] = event.startTime.split(":");
                                 const [endHour, endMinute] = event.endTime
                                   ? event.endTime.split(":")
                                   : [`${parseInt(startHour) + 1}`, "00"];
 
-                                const topPercentage =
-                                  (parseInt(startMinute) / 60) * 100;
-                                const hoursDiff =
-                                  parseInt(endHour) - parseInt(startHour);
-                                const minutesDiff =
-                                  (parseInt(endMinute) -
-                                    parseInt(startMinute)) /
-                                  60;
-                                const duration =
-                                  (hoursDiff + minutesDiff) * 100;
+                                const topPercentage = (parseInt(startMinute) / 60) * 100;
+                                const hoursDiff = parseInt(endHour) - parseInt(startHour);
+                                const minutesDiff = (parseInt(endMinute) - parseInt(startMinute)) / 60;
+                                const duration = (hoursDiff + minutesDiff) * 100;
 
-                                // Calculate width and left position based on number of overlapping events
+                                // Improved overlapping event layout
                                 const totalEvents = hourEvents.length;
-                                const baseWidth = 90; // Base width percentage
-                                const width =
-                                  totalEvents > 1
-                                    ? baseWidth - idx * 10
-                                    : baseWidth;
-                                const left = idx > 0 ? 5 : 2;
+                                const eventWidth = totalEvents > 1 && idx === 0 ? 75 : 100; // First event 75% width, others 100%
+                                const leftOffset = totalEvents > 1 && idx === 0 ? 15 : 0; // First event offset to right
 
                                 return (
                                   <div
                                     key={idx}
                                     onClick={() => onEventClick(event)}
-                                    className="absolute p-1 text-xs rounded cursor-pointer overflow-hidden hover:opacity-80 transition-colors"
+                                    className="absolute p-1.5 text-xs rounded-md cursor-pointer overflow-hidden hover:opacity-90 transition-all duration-200 shadow-sm hover:shadow-md"
                                     style={{
                                       top: `${topPercentage}%`,
                                       height: `${duration}%`,
-                                      minHeight: "20px",
-                                      zIndex: totalEvents - idx,
-                                      width: `${width}%`,
-                                      left: `${left}%`,
+                                      minHeight: "24px",
+                                      width: `${eventWidth}%`,
+                                      left: `${leftOffset}%`,
                                       backgroundColor: event.color || "#dbeafe",
-                                      color: event.color
-                                        ? getContrastColor(event.color)
-                                        : "#1e40af",
+                                      color: event.color ? getContrastColor(event.color) : "#1e40af",
+                                      zIndex: totalEvents - idx,
+                                      transform: "scale(0.98)",
+                                      transformOrigin: "left",
                                     }}
                                   >
-                                    <div className="truncate font-medium">
+                                    <div className="font-medium truncate text-[11px]">
                                       {event.title}
                                     </div>
                                     <div
-                                      className="text-xs"
+                                      className="text-[10px] opacity-90"
                                       style={{
-                                        color: event.color
-                                          ? getContrastColor(event.color)
-                                          : "#1e40af",
+                                        color: event.color ? getContrastColor(event.color) : "#1e40af",
                                       }}
                                     >
                                       {event.startTime} - {event.endTime}
@@ -443,7 +486,7 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
               </div>
             ))}
             {days.map((day, index) => {
-              const date = new Date(
+              const date = day.fullDate || new Date(
                 currentDate.getFullYear(),
                 currentDate.getMonth(),
                 day.date
@@ -499,6 +542,33 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
           </div>
         )}
       </div>
+      {isSearchModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-200" 
+          onClick={() => setIsSearchModalOpen(false)}
+          style={{ paddingTop: '20vh' }}
+        >
+          <div 
+            className="w-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 transform transition-all duration-200 scale-100" 
+            onClick={e => e.stopPropagation()}
+          >
+            <form onSubmit={handleDateSearch} className="p-4">
+              <input
+                type="text"
+                name="date"
+                autoFocus
+                placeholder="Jump to date... (e.g., 'tomorrow', 'next monday', '2024-03-15')"
+                className="w-full bg-transparent text-gray-900 text-xl px-4 py-3 border-none focus:outline-none placeholder-gray-400"
+                required
+              />
+              <div className="mt-2 px-4 text-sm text-gray-500">
+                <span>Press Enter to jump to date, Esc to cancel</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   MdSettings,
   MdPalette,
 } from "react-icons/md";
+import Image from "next/image";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -31,13 +32,6 @@ const Navbar = () => {
               Calendar
             </Link>
             <Link
-              href="/settings"
-              className="text-gray-800 hover:text-gray-600 flex items-center gap-2"
-            >
-              <MdSettings className="text-xl" />
-              Settings
-            </Link>
-            <Link
               href="/color-code"
               className="text-gray-800 hover:text-gray-600 flex items-center gap-2"
             >
@@ -48,10 +42,13 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {user && (
               <>
-                <img
+                <Image
                   src={user.photoURL || "/default-avatar.png"}
                   alt="Profile"
-                  className="w-8 h-8 rounded-full"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                  priority
                 />
                 <span className="text-gray-800">{user.displayName}</span>
                 <button

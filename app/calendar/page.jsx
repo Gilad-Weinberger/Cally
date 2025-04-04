@@ -30,12 +30,8 @@ export default function CalendarPage() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      fetchCalendarAndEvents();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
+    fetchCalendarAndEvents();
+  }, []);
 
   const fetchCalendarAndEvents = async () => {
     if (!user) return;

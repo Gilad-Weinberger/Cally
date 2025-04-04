@@ -148,6 +148,14 @@ export default function EventModal({
                   className="w-10 h-10 rounded-full border cursor-pointer"
                   style={{ backgroundColor: formData.color || "#3b82f6" }}
                   onClick={() => setFormData({ ...formData, showColorPicker: !formData.showColorPicker })}
+                  aria-label="Toggle color picker"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setFormData({ ...formData, showColorPicker: !formData.showColorPicker });
+                    }
+                  }}
                 />
                 <input
                   type="text"
@@ -157,6 +165,7 @@ export default function EventModal({
                   }
                   className="w-full p-2 border rounded"
                   placeholder="Enter color hex code"
+                  aria-label="Color hex code"
                 />
               </div>
               {formData.showColorPicker && (

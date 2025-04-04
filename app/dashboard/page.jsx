@@ -6,7 +6,7 @@ import PromptInput from "@/components/PromptInput";
 import EventList from "@/components/EventList";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy, getDocs } from "firebase/firestore";
 
 const Dashboard = () => {
   const [events, setEvents] = useState([]);
@@ -16,22 +16,17 @@ const Dashboard = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      window.location.href = '/signin';
-      return;
-    }
-
     let unsubscribeEvents = null;
+    let unsubscribeCalendars = null;
 
     const fetchData = async () => {
       try {
-        // Subscribe to user's calendars
         const calendarQuery = query(
           collection(db, "calendars"),
           where("userId", "==", user.uid)
         );
 
-        const unsubscribeCalendars = onSnapshot(calendarQuery, (snapshot) => {
+        unsubscribeCalendars = onSnapshot(calendarQuery, (snapshot) => {
           const calendarData = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
@@ -39,35 +34,36 @@ const Dashboard = () => {
           setCalendars(calendarData);
         });
 
-        // Subscribe to all user's events directly
-        const eventsQuery = query(
-          collection(db, "events"),
-          where("userId", "==", user.uid)
-        );
-
-        unsubscribeEvents = onSnapshot(eventsQuery, (eventsSnapshot) => {
-          const eventData = eventsSnapshot.docs.map((doc) => ({
+        // Subscribe to upcoming events only
+        const now = new Date();
+        try {
+          const eventsCollection = collection(db, "events");
+          const eventSnapshot = await getDocs(eventsCollection);
+          const eventsList = eventSnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
-          setEvents(eventData);
-          setLoading(false);
-        });
+          setEvents(eventsList);
 
-        return () => {
-          unsubscribeCalendars();
-          if (unsubscribeEvents) {
-            unsubscribeEvents();
-          }
-        };
+        } catch (error) {
+          console.error("Error fetching events:", error);
+        }
       } catch (err) {
         console.error("Error fetching data:", err);
         setError(err.message);
         setLoading(false);
       }
+      finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
+    
+    return () => {
+      if (unsubscribeCalendars) unsubscribeCalendars();
+      if (unsubscribeEvents) unsubscribeEvents();
+    };
   }, [user]);
 
   if (loading) {

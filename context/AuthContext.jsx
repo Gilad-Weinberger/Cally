@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await signOut(auth);
-      router.push("/signin");
+      router.push("/auth/signin");
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -104,7 +104,10 @@ export const AuthProvider = ({ children }) => {
         }
       } else {
         setUser(null);
-        router.push("/signin");
+        const pathname = window.location.pathname;
+        if (!pathname.startsWith('/auth/')) {
+          router.push('/auth/signin');
+        }
       }
       setLoading(false);
     });

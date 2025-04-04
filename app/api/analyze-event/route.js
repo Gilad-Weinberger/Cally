@@ -4,13 +4,19 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 // Initialize Gemini client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
   model: "gemini-2.0-flash",
   generationConfig: {
     temperature: 0.7,
-    responseType: "json",
+    maxOutputTokens: 2048,
   },
+  safetySettings: [
+    {
+      category: "HARM_CATEGORY_HARASSMENT",
+      threshold: "BLOCK_NONE",
+    },
+  ],
 });
 
 export async function POST(request) {
@@ -132,9 +138,11 @@ export async function POST(request) {
     let eventData;
 
     try {
-      // Get the response text and parse it as JSON
+      // Get the response text and extract JSON from markdown if needed
       const responseText = result.response.text();
-      eventData = JSON.parse(responseText);
+      // Remove markdown code block if present
+      const jsonContent = responseText.replace(/^```json\n|```$/gm, '').trim();
+      eventData = JSON.parse(jsonContent);
     } catch (error) {
       console.error("Error parsing Gemini response:", error);
       return NextResponse.json(
