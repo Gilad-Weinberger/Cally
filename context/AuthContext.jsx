@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
         const pathname = window.location.pathname;
-        if (!pathname.startsWith('/auth/')) {
+        if (!pathname.startsWith('/auth/') && pathname !== '/') {
           router.push('/auth/signin');
         }
       }
