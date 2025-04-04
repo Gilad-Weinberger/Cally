@@ -75,13 +75,10 @@ const PricingSection = () => {
   return (
     <section className="py-16 md:py-24 bg-white" id="pricing">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center mb-12">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Simple, Transparent Pricing
+        <div className="mx-auto max-w-3xl text-center mb-7">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Pricing Plans
           </h2>
-          <p className="text-xl text-gray-600">
-            Choose the plan that's right for you and start optimizing your schedule with AI
-          </p>
         </div>
 
         {/* Pricing Toggle */}
