@@ -1,7 +1,7 @@
 'use client';
 
-import PrimaryButton from '../PrimaryButton';
-import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../shared/ui/PrimaryButton';
+import SecondaryButton from '../shared/ui/SecondaryButton';
 import { CheckIcon } from '@heroicons/react/24/outline';
 
 const PricingCard = ({ plan, isAnnual, savings }) => {

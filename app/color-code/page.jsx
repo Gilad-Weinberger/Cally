@@ -14,7 +14,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import Navbar from "@/components/Navbar"; // Import Navbar
+import Navbar from "@/components/shared/layout/Navbar"; // Import Navbar
 
 const Page = () => {
   const { user } = useAuth();

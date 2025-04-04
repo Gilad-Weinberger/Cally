@@ -1,75 +1,66 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import { FaXTwitter, FaLinkedin, FaGithub } from 'react-icons/fa6';
 
 const Footer = () => {
-  return (
-    <footer className="bg-gray-50 border-t border-gray-200">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo and Description */}
-          <div className="col-span-1 md:col-span-2">
-            <Link href="/">
-              <Image 
-                src="/logo.png" 
-                alt="Caly Logo" 
-                width={120} 
-                height={40} 
-                className="h-10 w-auto mb-4" 
-                priority 
-              />
-            </Link>
-            <p className="text-gray-600 mb-4">
-              Your AI-powered calendar assistant that helps you make the most of your time.
-            </p>
-          </div>
+  const currentYear = new Date().getFullYear();
+    const footerLinks = {
+    social: {
+        twitter: process.env.NEXT_PUBLIC_X_URL || '/',
+        linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || '/',
+        github: process.env.NEXT_PUBLIC_GITHUB_URL || '/'
+    }
+    };
 
-          {/* Quick Links */}
+  return (
+    <footer className="bg-gray-900 text-white py-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          {/* Company Info */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase mb-4">Quick Links</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xl font-semibold mb-4">Caly</h3>
+            <p className="text-gray-400 mb-4">
+              Your AI-powered calendar assistant that helps you organize your schedule efficiently.
+            </p>
+            <div className="flex space-x-4">
+              <a href={footerLinks.social.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                <FaXTwitter className="h-6 w-6" />
+              </a>
+              <a href={footerLinks.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                <FaLinkedin className="h-6 w-6" />
+              </a>
+              <a href={footerLinks.social.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                <FaGithub className="h-6 w-6" />
+              </a>
+            </div>
+          </div>
+          
+          {/* Navigation Links */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
               <li>
-                <Link href="/#features" className="text-gray-600 hover:text-gray-900">
+                <Link href="/#features" className="text-gray-400 hover:text-white transition-colors">
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="/#pricing" className="text-gray-600 hover:text-gray-900">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link href="/#testimonials" className="text-gray-600 hover:text-gray-900">
+                <Link href="/#testimonials" className="text-gray-400 hover:text-white transition-colors">
                   Testimonials
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase mb-4">Legal</h3>
-            <ul className="space-y-3">
               <li>
-                <Link href="/privacy" className="text-gray-600 hover:text-gray-900">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-gray-600 hover:text-gray-900">
-                  Terms of Service
+                <Link href="/#pricing" className="text-gray-400 hover:text-white transition-colors">
+                  Pricing
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-200">
-          <p className="text-center text-gray-600">
-            © {new Date().getFullYear()} Caly. All rights reserved.
-          </p>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <p>&copy; {currentYear} Caly. All rights reserved.</p>
         </div>
       </div>
     </footer>

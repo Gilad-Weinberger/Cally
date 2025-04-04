@@ -4,65 +4,10 @@ import { useState } from 'react';
 import PricingToggle from './PricingToggle';
 import PricingCard from './PricingCard';
 // import PricingFAQ from './PeicingFAQ';
+import { pricingPlans } from '@/lib/data';
 
 const PricingSection = () => {
   const [isAnnual, setIsAnnual] = useState(true);
-
-  // Define pricing plans with monthly and annual options
-  const pricingPlans = [
-    {
-      name: 'Free',
-      description: 'Basic calendar features to get you started',
-      monthlyPrice: 0,
-      annualPrice: 0,
-      features: [
-        'Basic calendar management',
-        'Limited AI suggestions',
-        'Up to 5 events per day',
-        'Email notifications'
-      ],
-      cta: 'Get Started',
-      ctaLink: '/auth/signup',
-      highlighted: false,
-      aiFeatures: 'Limited'
-    },
-    {
-      name: 'Pro',
-      description: 'Advanced AI features for individuals',
-      monthlyPrice: 9.99,
-      annualPrice: 99.99,
-      features: [
-        'Everything in Free',
-        'Unlimited AI scheduling',
-        'Task prioritization',
-        'Smart reminders',
-        'Calendar analytics'
-      ],
-      cta: 'Start Free Trial',
-      ctaLink: '/auth/signup?plan=pro',
-      highlighted: true,
-      badge: 'Most Popular',
-      aiFeatures: 'Advanced'
-    },
-    {
-      name: 'Teams',
-      description: 'Powerful tools for teams and businesses',
-      monthlyPrice: 19.99,
-      annualPrice: 199.99,
-      features: [
-        'Everything in Pro',
-        'Team scheduling',
-        'Shared calendars',
-        'Admin controls',
-        'API access',
-        'Priority support'
-      ],
-      cta: 'Contact Sales',
-      ctaLink: '/contact',
-      highlighted: false,
-      aiFeatures: 'Enterprise-grade'
-    }
-  ];
 
   // Calculate savings for annual plans
   const calculateSavings = (monthly, annual) => {

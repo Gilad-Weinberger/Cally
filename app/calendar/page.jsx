@@ -12,10 +12,10 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
-import CalendarView from "@/components/calendar/CalendarView";
-import EventModal from "@/components/calendar/EventModal";
-import TextPromptInput from "@/components/calendar/TextPromptInput";
-import Sidebar from "@/components/Sidebar";
+import CalendarView from "@/components/CalendarPage/CalendarView";
+import EventModal from "@/components/CalendarPage/EventModal";
+import TextPromptInput from "@/components/CalendarPage/TextPromptInput";
+import Sidebar from "@/components/shared/layout/Sidebar";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { FaRobot } from "react-icons/fa";
 

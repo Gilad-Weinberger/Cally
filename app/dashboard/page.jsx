@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
-import CalendarOverview from "@/components/CalendarOverview";
-import PromptInput from "@/components/PromptInput";
-import EventList from "@/components/EventList";
+import Navbar from "@/components/shared/layout/Navbar";
+import CalendarOverview from "@/components/DashboardPage/CalendarOverview";
+import PromptInput from "@/components/DashboardPage/PromptInput";
+import EventList from "@/components/DashboardPage/EventList";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDocs } from "firebase/firestore";

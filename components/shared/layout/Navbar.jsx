@@ -1,9 +1,14 @@
 "use client";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { MdDashboard, MdCalendarMonth, MdSettings, MdPalette } from "react-icons/md";
+import {
+  MdDashboard,
+  MdCalendarMonth,
+  MdSettings,
+  MdPalette,
+} from "react-icons/md";
 import Image from "next/image";
-import PrimaryButton from "@/components/shared/ui/PrimaryButton";
+import PrimaryButton from "../ui/PrimaryButton";
 
 const Navbar = () => {
   const { user, logout } = useAuth();

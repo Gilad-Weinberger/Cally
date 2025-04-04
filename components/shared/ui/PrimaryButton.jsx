@@ -1,24 +1,12 @@
-'use client';
-
 import Link from 'next/link';
 
-const PrimaryButton = ({ children, href, onClick, className = '', ...props }) => {
-  const baseClasses = 'inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors';
-  const classes = `${baseClasses} ${className}`;
-
-  if (href) {
-    return (
-      <Link href={href} className={classes} {...props}>
-        {children}
-      </Link>
-    );
-  }
-
+export default function PrimaryButton({ href, children }) {
   return (
-    <button type="button" className={classes} onClick={onClick} {...props}>
+    <Link 
+      href={href} 
+      className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-indigo-600 to-blue-500 px-6 py-3 text-base font-medium text-white shadow-lg transition-all hover:from-indigo-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+    >
       {children}
-    </button>
+    </Link>
   );
-};
-
-export default PrimaryButton;
+}
