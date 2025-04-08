@@ -9,12 +9,10 @@ const PricingCard = ({ plan, isAnnual, savings }) => {
   const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
   const period = isAnnual ? "/year" : "/month";
   const isPlanFree = plan.name === "Free" || plan.monthlyPrice === 0;
-  const billingInterval = isAnnual ? "year" : "month";
 
   // Get the appropriate variant ID based on billing interval
-  const variantId = isAnnual
-    ? plan.yearlyVariantId || plan.variantId
-    : plan.monthlyVariantId || plan.variantId;
+  const variantId = isAnnual ? plan.yearlyVariantId : plan.monthlyVariantId;
+  const validVariantId = isPlanFree ? null : variantId;
 
   const ctaMapping = {
     Free: { text: "Get Started", link: "/auth/signup" },
@@ -91,14 +89,7 @@ const PricingCard = ({ plan, isAnnual, savings }) => {
             </SecondaryButton>
           )
         ) : (
-          <PricingCheckout
-            planId={variantId}
-            price={plan.monthlyPrice}
-            annualPrice={plan.annualPrice}
-            billingInterval={billingInterval}
-            hideBillingToggle={true}
-            isHighlighted={plan.highlighted}
-          />
+          <PricingCheckout planId={validVariantId} />
         )}
       </div>
     </div>

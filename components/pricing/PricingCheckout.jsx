@@ -9,19 +9,35 @@ const PricingCheckout = ({ planId }) => {
   const router = useRouter();
   const user = useAuth();
 
+  // Log when component mounts with planId
+  useEffect(() => {
+    console.log("PricingCheckout initialized with planId:", planId);
+  }, [planId]);
+
+  // Log when loading state changes
+  useEffect(() => {
+    if (isLoading === false) {
+      console.log("PricingCheckout: Loading is false", { planId });
+    }
+  }, [isLoading, planId]);
+
   const handleCheckout = async () => {
     setIsLoading(true);
+    console.log("Starting checkout with planId:", planId);
 
     try {
       const userId = user?.user?.uid || null;
       if (!userId) {
         router.push("/signin");
+        setIsLoading(false);
+        console.log("PricingCheckout: Loading is false - No user ID");
         return;
       }
 
       if (!planId) {
         console.error("No valid plan ID found");
         setIsLoading(false);
+        console.log("PricingCheckout: Loading is false - No valid plan ID");
         return;
       }
 
@@ -54,10 +70,12 @@ const PricingCheckout = ({ planId }) => {
         console.error("Checkout API error:", e);
         alert("There was an error setting up your checkout. Please try again.");
         setIsLoading(false);
+        console.log("PricingCheckout: Loading is false - API error", e);
       }
     } catch (error) {
       console.error("Error during checkout:", error);
       setIsLoading(false);
+      console.log("PricingCheckout: Loading is false - General error", error);
     }
   };
 

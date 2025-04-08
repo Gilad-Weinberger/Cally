@@ -35,13 +35,19 @@ const PricingSection = () => {
               : name === "Plus"
               ? "Enhanced"
               : "Advanced",
-          variantId: plans[0].variantId,
+          // For single plans, use the variantId directly from config
+          monthlyVariantId: plans[0].variantId,
+          yearlyVariantId: plans[0].variantId,
         };
       }
 
-      // Find the monthly and yearly variants
+      // Find the monthly and yearly variants directly from config.js
       const monthlyPlan = plans.find((p) => p.isMonthly) || plans[0];
       const yearlyPlan = plans.find((p) => p.isYearly) || plans[0];
+
+      // Ensure we have the variant IDs directly from config
+      const monthlyVariantId = monthlyPlan.variantId;
+      const yearlyVariantId = yearlyPlan.variantId;
 
       return {
         name: monthlyPlan.name,
@@ -52,8 +58,9 @@ const PricingSection = () => {
         highlighted: monthlyPlan.isFeatured || false,
         aiFeatures:
           name === "Free" ? "Basic" : name === "Plus" ? "Enhanced" : "Advanced",
-        monthlyVariantId: monthlyPlan.variantId,
-        yearlyVariantId: yearlyPlan.variantId,
+        // Set the variant IDs directly from the corresponding plans
+        monthlyVariantId: monthlyVariantId,
+        yearlyVariantId: yearlyVariantId,
       };
     });
   };
@@ -67,6 +74,8 @@ const PricingSection = () => {
   };
 
   const pricingPlans = getFilteredPlans();
+
+  console.log(pricingPlans);
 
   return (
     <section className="py-16 md:py-24 bg-white" id="pricing">
