@@ -32,7 +32,7 @@ export async function POST() {
       return NextResponse.json({ error: e?.message }, { status: 500 });
     }
   } else {
-    // Not Signed in
+    // Not Signed in.
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
 }
