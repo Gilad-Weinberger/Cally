@@ -38,6 +38,9 @@ export const AuthProvider = ({ children }) => {
         id: user.uid,
         email: user.email,
         createdAt: new Date().toISOString(),
+        customerId: "",
+        variantId: "",
+        hasAccess: false,
       });
       console.log("User created in the database.");
       return true;
@@ -72,10 +75,7 @@ export const AuthProvider = ({ children }) => {
 
   async function createColorCode(userId) {
     const colorCodesRef = collection(db, "colorCodes");
-    const q = query(
-      colorCodesRef,
-      where("userId", "==", userId),
-    );
+    const q = query(colorCodesRef, where("userId", "==", userId));
 
     const querySnapshot = await getDocs(q);
 
@@ -105,8 +105,8 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
         const pathname = window.location.pathname;
-        if (!pathname.startsWith('/auth/') && pathname !== '/') {
-          router.push('/auth/signin');
+        if (!pathname.startsWith("/auth/") && pathname !== "/") {
+          router.push("/auth/signin");
         }
       }
       setLoading(false);

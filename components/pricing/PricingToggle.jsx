@@ -17,11 +17,6 @@ const PricingToggle = ({ isAnnual, setIsAnnual }) => {
           Annual
         </button>
       </div>
-      {isAnnual && (
-        <div className="mt-2 text-sm text-indigo-600 font-medium">
-          Save up to 20% with annual billing
-        </div>
-      )}
     </div>
   );
 };

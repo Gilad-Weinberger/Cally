@@ -1,21 +1,72 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import PricingToggle from './PricingToggle';
-import PricingCard from './PricingCard';
-// import PricingFAQ from './PeicingFAQ';
-import { pricingPlans } from '@/lib/data';
+import { useState } from "react";
+import PricingToggle from "./PricingToggle";
+import PricingCard from "./PricingCard";
+import PricingFAQ from "./PricingFAQ";
+import config from "@/lib/config";
 
 const PricingSection = () => {
   const [isAnnual, setIsAnnual] = useState(true);
+
+  // Filter plans based on billing interval
+  const getFilteredPlans = () => {
+    // Create a unique set of plan names to group monthly/yearly variants
+    const planNames = [
+      ...new Set(config.lemonsqueezy.plans.map((plan) => plan.name)),
+    ];
+
+    // For each unique plan name, find the correct plan based on billing interval
+    return planNames.map((name) => {
+      const plans = config.lemonsqueezy.plans.filter((p) => p.name === name);
+
+      // If there's only one plan (like Free), return it
+      if (plans.length === 1) {
+        return {
+          name: plans[0].name,
+          description: plans[0].description,
+          monthlyPrice: plans[0].price,
+          annualPrice: plans[0].price,
+          features: plans[0].features.map((f) => f.name),
+          highlighted: plans[0].isFeatured || false,
+          aiFeatures:
+            name === "Free"
+              ? "Basic"
+              : name === "Plus"
+              ? "Enhanced"
+              : "Advanced",
+          variantId: plans[0].variantId,
+        };
+      }
+
+      // Find the monthly and yearly variants
+      const monthlyPlan = plans.find((p) => p.isMonthly) || plans[0];
+      const yearlyPlan = plans.find((p) => p.isYearly) || plans[0];
+
+      return {
+        name: monthlyPlan.name,
+        description: monthlyPlan.description,
+        monthlyPrice: monthlyPlan.price,
+        annualPrice: yearlyPlan.price,
+        features: monthlyPlan.features.map((f) => f.name),
+        highlighted: monthlyPlan.isFeatured || false,
+        aiFeatures:
+          name === "Free" ? "Basic" : name === "Plus" ? "Enhanced" : "Advanced",
+        monthlyVariantId: monthlyPlan.variantId,
+        yearlyVariantId: yearlyPlan.variantId,
+      };
+    });
+  };
 
   // Calculate savings for annual plans
   const calculateSavings = (monthly, annual) => {
     if (monthly === 0) return null;
     const monthlyCost = monthly * 12;
-    const savings = ((monthlyCost - annual) / monthlyCost * 100).toFixed(0);
+    const savings = (((monthlyCost - annual) / monthlyCost) * 100).toFixed(0);
     return savings;
   };
+
+  const pricingPlans = getFilteredPlans();
 
   return (
     <section className="py-16 md:py-24 bg-white" id="pricing">
@@ -42,9 +93,9 @@ const PricingSection = () => {
         </div>
 
         {/* FAQ Section */}
-        {/* <div className="mt-20">
+        <div className="mt-20">
           <PricingFAQ />
-        </div> */}
+        </div>
       </div>
     </section>
   );
