@@ -4,8 +4,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import {
   MdDashboard,
   MdCalendarMonth,
-  MdSettings,
   MdPalette,
+  MdAttachMoney,
 } from "react-icons/md";
 import { useAuth } from "@/context/AuthContext";
 
@@ -61,6 +61,15 @@ const Sidebar = () => {
         >
           <MdPalette className="text-xl" />
           {!isShrunk && <span className="ml-2">Color Code</span>}
+        </Link>
+        <Link
+          href="/pricing"
+          className={`flex items-center ${
+            isShrunk ? "justify-center px-2" : "px-4"
+          } py-2 text-gray-700 hover:bg-gray-100 rounded-lg`}
+        >
+          <MdAttachMoney className="text-xl" />
+          {!isShrunk && <span className="ml-2">Pricing</span>}
         </Link>
       </nav>
       {user && (
