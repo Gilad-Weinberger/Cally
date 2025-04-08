@@ -6,12 +6,33 @@ export async function POST(request) {
   try {
     const { dateText } = await request.json();
     const now = new Date();
-    const currentDate = now.toISOString().split('T')[0];
-    const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
-    const monthName = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][now.getMonth()];
+    const currentDate = now.toISOString().split("T")[0];
+    const dayOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ][now.getDay()];
+    const monthName = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ][now.getMonth()];
     const dayOfMonth = now.getDate();
     const year = now.getFullYear();
-    
+
     // Create a clear prompt with examples and current date context
     const prompt = `You are a date formatting assistant. Your task is to parse the given date expression and return ONLY a valid ISO date string (YYYY-MM-DD). Do not include any additional text or explanation.
 
@@ -50,37 +71,41 @@ If the input cannot be parsed, return exactly the string of "${currentDate}".
 
 Parse this date: "${dateText}"`;
 
-
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let text = response.text();
-    text = text.replace(/\n/g, '');
+    text = text.replace(/\n/g, "");
 
     // Validate the returned date
     const isValidDate = (dateStr) => {
-      const [year, month, day] = dateStr.split('-').map(Number);
+      const [year, month, day] = dateStr.split("-").map(Number);
       const date = new Date(year, month - 1, day);
-      return date.getFullYear() === year &&
-            date.getMonth() === month - 1 &&
-            date.getDate() === day &&
-            year >= 1000 && year <= 9999 &&
-            month >= 1 && month <= 12 &&
-            day >= 1 && day <= 31;
+      return (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day &&
+        year >= 1000 &&
+        year <= 9999 &&
+        month >= 1 &&
+        month <= 12 &&
+        day >= 1 &&
+        day <= 31
+      );
     };
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    
+
     // check if the format is correct
     if (!dateRegex.test(text)) {
       // Return today's date as fallback
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       return Response.json({ date: today });
     }
 
     console.log("Parsed date:", text);
     return Response.json({ date: text });
   } catch (error) {
-    console.error('Error parsing date:', error);
+    console.error("Error parsing date:", error);
     return Response.json({ error: "Failed to parse date" }, { status: 500 });
   }
 }

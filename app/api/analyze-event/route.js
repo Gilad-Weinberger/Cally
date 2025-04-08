@@ -50,13 +50,34 @@ export async function POST(request) {
 
     // Get current date and time for context
     const now = new Date();
-    const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
-    const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
-    const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
-    const monthName = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][now.getMonth()];
+    const currentDate = now.toISOString().split("T")[0]; // YYYY-MM-DD
+    const currentTime = now.toTimeString().split(" ")[0].substring(0, 5); // HH:MM
+    const dayOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ][now.getDay()];
+    const monthName = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ][now.getMonth()];
     const dayOfMonth = now.getDate();
     const year = now.getFullYear();
-    
+
     // Prepare the system message with color code information
     let systemMessage = `You are an AI assistant that helps users create calendar events from natural language descriptions. 
     
@@ -131,9 +152,9 @@ export async function POST(request) {
 
     // Call Gemini API to analyze the prompt
     const combinedPrompt = `${systemMessage}\n\nUser input: ${prompt}`;
-    
+
     const result = await model.generateContent(combinedPrompt);
-    
+
     // Parse the response
     let eventData;
 
@@ -141,7 +162,7 @@ export async function POST(request) {
       // Get the response text and extract JSON from markdown if needed
       const responseText = result.response.text();
       // Remove markdown code block if present
-      const jsonContent = responseText.replace(/^```json\n|```$/gm, '').trim();
+      const jsonContent = responseText.replace(/^```json\n|```$/gm, "").trim();
       eventData = JSON.parse(jsonContent);
     } catch (error) {
       console.error("Error parsing Gemini response:", error);
