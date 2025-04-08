@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createCustomerPortal } from "@/libs/lemonsqueezy";
+import { createCustomerPortal } from "@/lib/lemonsqueezy";
 import { useAuth } from "@/context/AuthContext";
 import { findUserInFirestore } from "@/lib/firestore";
 
