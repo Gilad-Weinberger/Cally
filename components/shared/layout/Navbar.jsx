@@ -9,7 +9,7 @@ import {
   MdAttachMoney,
 } from "react-icons/md";
 import Image from "next/image";
-import PrimaryButton from "../ui/PrimaryButton";
+import PrimaryButton from "../ui/ButtonPrimary";
 import ButtonAccount from "../ui/ButtonAccount";
 
 const Navbar = () => {

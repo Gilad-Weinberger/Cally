@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function SecondaryButton({ href, children, fullWidth = false }) {
+export default function ButtonSecondary({ href, children, fullWidth = false }) {
   return (
     <Link
       href={href}

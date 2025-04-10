@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 import CalendarView from "@/components/CalendarPage/CalendarView";
 import EventModal from "@/components/CalendarPage/EventModal";
 import TextPromptInput from "@/components/CalendarPage/TextPromptInput";
+import ButtonConnectGoogleCalendar from "@/components/CalendarPage/ButtonConnectGoogleCalendar";
 import Sidebar from "@/components/shared/layout/Sidebar";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { FaRobot } from "react-icons/fa";

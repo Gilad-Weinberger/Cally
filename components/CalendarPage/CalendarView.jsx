@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import ButtonConnectGoogleCalendar from "./ButtonConnectGoogleCalendar";
 
 export default function CalendarView({ events, onEventClick, isLoading }) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -300,6 +301,7 @@ export default function CalendarView({ events, onEventClick, isLoading }) {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">{getHeaderText()}</h2>
         <div className="flex items-center gap-4">
+          <ButtonConnectGoogleCalendar />
           <div className="flex gap-2 mr-4">
             <button
               onClick={goToToday}

@@ -1,7 +1,7 @@
 "use client";
 
-import PrimaryButton from "../shared/ui/PrimaryButton";
-import SecondaryButton from "../shared/ui/SecondaryButton";
+import PrimaryButton from "../shared/ui/ButtonPrimary";
+import SecondaryButton from "../shared/ui/ButtonSecondary";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import PricingCheckout from "./PricingCheckout";
 
