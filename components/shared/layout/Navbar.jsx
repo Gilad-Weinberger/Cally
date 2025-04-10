@@ -13,7 +13,7 @@ import PrimaryButton from "../ui/PrimaryButton";
 import ButtonAccount from "../ui/ButtonAccount";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   // Navbar for authenticated users
   const AuthenticatedNavbar = () => (

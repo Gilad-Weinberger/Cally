@@ -9,35 +9,20 @@ const PricingCheckout = ({ planId }) => {
   const router = useRouter();
   const user = useAuth();
 
-  // Log when component mounts with planId
-  useEffect(() => {
-    console.log("PricingCheckout initialized with planId:", planId);
-  }, [planId]);
-
-  // Log when loading state changes
-  useEffect(() => {
-    if (isLoading === false) {
-      console.log("PricingCheckout: Loading is false", { planId });
-    }
-  }, [isLoading, planId]);
-
   const handleCheckout = async () => {
     setIsLoading(true);
-    console.log("Starting checkout with planId:", planId);
 
     try {
       const userId = user?.user?.uid || null;
       if (!userId) {
-        router.push("/signin");
+        router.push("/auth/signin");
         setIsLoading(false);
-        console.log("PricingCheckout: Loading is false - No user ID");
         return;
       }
 
       if (!planId) {
         console.error("No valid plan ID found");
         setIsLoading(false);
-        console.log("PricingCheckout: Loading is false - No valid plan ID");
         return;
       }
 
@@ -70,12 +55,10 @@ const PricingCheckout = ({ planId }) => {
         console.error("Checkout API error:", e);
         alert("There was an error setting up your checkout. Please try again.");
         setIsLoading(false);
-        console.log("PricingCheckout: Loading is false - API error", e);
       }
     } catch (error) {
       console.error("Error during checkout:", error);
       setIsLoading(false);
-      console.log("PricingCheckout: Loading is false - General error", error);
     }
   };
 
@@ -84,7 +67,7 @@ const PricingCheckout = ({ planId }) => {
       <button
         onClick={handleCheckout}
         disabled={isLoading || !planId}
-        className="w-full py-3 px-4 font-semibold rounded-md transition duration-200 disabled:opacity-50 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white"
+        className={`w-full items-center justify-center rounded-lg bg-gradient-to-r from-indigo-600 to-blue-500 px-6 py-3 text-base font-medium text-white shadow-lg transition-all hover:from-indigo-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex disabled:opacity-50 disabled:cursor-not-allowed`}
       >
         {isLoading ? (
           <>

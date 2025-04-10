@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await signOut(auth);
-      router.push("/auth/signin");
+      if (router.pathname !== '/dashboard') {
+        router.push("/auth/signin");
+      }
     } catch (error) {
       console.error("Error logging out:", error);
     }

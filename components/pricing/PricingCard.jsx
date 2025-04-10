@@ -48,12 +48,6 @@ const PricingCard = ({ plan, isAnnual, savings }) => {
           </span>
           {price !== 0 && <span className="text-gray-600 ml-1">{period}</span>}
         </div>
-
-        {isAnnual && savings && !isPlanFree && (
-          <div className="mt-2 text-sm text-green-600 font-medium">
-            Save {savings}% with annual billing
-          </div>
-        )}
       </div>
 
       <div className="mb-6">

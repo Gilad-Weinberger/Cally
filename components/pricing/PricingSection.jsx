@@ -75,6 +75,16 @@ const PricingSection = () => {
 
   const pricingPlans = getFilteredPlans();
 
+  // Find the maximum savings percentage among all plans
+  const maxSavingsPercentage = pricingPlans.reduce((max, plan) => {
+    if (plan.monthlyPrice === 0) return max;
+    const savings = calculateSavings(plan.monthlyPrice, plan.annualPrice);
+    return savings > max ? parseInt(savings) : max;
+  }, 0);
+
+  // Round up to the next 5%
+  const roundedSavingsPercentage = Math.ceil(maxSavingsPercentage / 5) * 5;
+
   console.log(pricingPlans);
 
   return (
@@ -88,6 +98,15 @@ const PricingSection = () => {
 
         {/* Pricing Toggle */}
         <PricingToggle isAnnual={isAnnual} setIsAnnual={setIsAnnual} />
+
+        {/* Savings Text */}
+        {isAnnual && maxSavingsPercentage > 0 && (
+          <div className="text-center mt-4">
+            <span className="text-md font-medium px-3 py-1 rounded-full bg-green-50 text-green-600">
+              Save up to {roundedSavingsPercentage}% with annual billing
+            </span>
+          </div>
+        )}
 
         {/* Pricing Cards */}
         <div className="mt-12 grid gap-8 md:grid-cols-3">
