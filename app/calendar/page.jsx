@@ -322,6 +322,7 @@ export default function CalendarPage() {
           )}
         </div>
       </div>
+      {/* Calendar View */}
       <main className="flex-1 p-4 overflow-hidden flex flex-col">
         {isLoading ? (
           <div className="flex items-center justify-center h-48">

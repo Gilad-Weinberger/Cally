@@ -11,7 +11,6 @@ const nextConfig = {
         hostname: "randomuser.me",
       },
     ],
-    domains: ["lh3.googleusercontent.com", "randomuser.me"],
   },
 };
 

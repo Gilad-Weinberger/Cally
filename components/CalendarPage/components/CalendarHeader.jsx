@@ -24,7 +24,7 @@ const CalendarHeader = ({
         {getHeaderText(viewMode, currentDate)}
       </h2>
       <div className="flex items-center gap-4 mr-4">
-        {!hasGoogleCalendar && <ButtonConnectGoogleCalendar />}
+        {/* {!hasGoogleCalendar && <ButtonConnectGoogleCalendar />} */}
         {hasGoogleCalendar && (
           <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1.5 mr-3">
             <button
