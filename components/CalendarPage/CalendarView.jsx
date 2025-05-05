@@ -6,6 +6,10 @@ import WeekView from "./components/WeekView";
 import MonthView from "./components/MonthView";
 import DateSearchModal from "./components/DateSearchModal";
 
+// localStorage keys
+const LOCAL_STORAGE_DATE_KEY = "calendarCurrentDate";
+const LOCAL_STORAGE_VIEW_MODE_KEY = "calendarViewMode";
+
 export default function CalendarView({
   events,
   onEventClick,
@@ -14,13 +18,40 @@ export default function CalendarView({
   hasGoogleCalendar = false,
   onGoogleCalendarToggle,
 }) {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState("month");
+  // Initialize state from localStorage or defaults
+  const [currentDate, setCurrentDate] = useState(() => {
+    const savedDate =
+      typeof window !== "undefined"
+        ? localStorage.getItem(LOCAL_STORAGE_DATE_KEY)
+        : null;
+    return savedDate ? new Date(savedDate) : new Date();
+  });
+  const [viewMode, setViewMode] = useState(() => {
+    return (
+      (typeof window !== "undefined" &&
+        localStorage.getItem(LOCAL_STORAGE_VIEW_MODE_KEY)) ||
+      "month"
+    );
+  });
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [visibleCalendars, setVisibleCalendars] = useState({
     app: true,
     google: true,
   });
+
+  // Effect to save currentDate to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(LOCAL_STORAGE_DATE_KEY, currentDate.toISOString());
+    }
+  }, [currentDate]);
+
+  // Effect to save viewMode to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(LOCAL_STORAGE_VIEW_MODE_KEY, viewMode);
+    }
+  }, [viewMode]);
 
   // Fetch Google Calendar events on initial load if connection exists
   useEffect(() => {
