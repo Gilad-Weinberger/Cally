@@ -75,45 +75,75 @@ const UserManagement = () => {
     );
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow mt-8">
-      <h2 className="text-2xl font-bold mb-4">User Management</h2>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white rounded-xl shadow mt-4 sm:mt-8">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center sm:text-left">
+        User Management
+      </h2>
       {isLoading ? (
         <div className="flex justify-center py-8">
           <LoadingSpinner />
         </div>
       ) : error ? (
-        <div className="text-red-500">{error}</div>
+        <div className="text-red-500 text-center">{error}</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border">ID</th>
-                <th className="py-2 px-4 border">Email</th>
-                <th className="py-2 px-4 border">Role</th>
-                <th className="py-2 px-4 border">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u.id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border break-all">{u.id}</td>
-                  <td className="py-2 px-4 border">{u.email}</td>
-                  <td className="py-2 px-4 border">{u.role}</td>
-                  <td className="py-2 px-4 border">
-                    <button
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50"
-                      onClick={() => handleDelete(u.id)}
-                      disabled={deletingUserId === u.id}
-                    >
-                      {deletingUserId === u.id ? "Deleting..." : "Delete"}
-                    </button>
-                  </td>
+        <>
+          {/* Mobile: Card/List View */}
+          <div className="flex flex-col gap-4 sm:hidden">
+            {users.map((u) => (
+              <div
+                key={u.id}
+                className="bg-gray-50 rounded-lg shadow-sm p-4 flex flex-col gap-2 border border-gray-200"
+              >
+                <div className="text-xs text-gray-400 break-all">
+                  ID: {u.id}
+                </div>
+                <div className="font-medium text-gray-800">{u.email}</div>
+                <div className="text-sm text-gray-600">
+                  Role: <span className="font-semibold">{u.role}</span>
+                </div>
+                <button
+                  className="mt-2 bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition disabled:opacity-50"
+                  onClick={() => handleDelete(u.id)}
+                  disabled={deletingUserId === u.id}
+                >
+                  {deletingUserId === u.id ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: Table View */}
+          <div className="overflow-x-auto hidden sm:block">
+            <table className="min-w-full border text-sm">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border">ID</th>
+                  <th className="py-2 px-4 border">Email</th>
+                  <th className="py-2 px-4 border">Role</th>
+                  <th className="py-2 px-4 border">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id} className="hover:bg-gray-50">
+                    <td className="py-2 px-4 border break-all">{u.id}</td>
+                    <td className="py-2 px-4 border">{u.email}</td>
+                    <td className="py-2 px-4 border">{u.role}</td>
+                    <td className="py-2 px-4 border">
+                      <button
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50"
+                        onClick={() => handleDelete(u.id)}
+                        disabled={deletingUserId === u.id}
+                      >
+                        {deletingUserId === u.id ? "Deleting..." : "Delete"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );
