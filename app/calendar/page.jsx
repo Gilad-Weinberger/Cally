@@ -22,6 +22,8 @@ import Sidebar from "@/components/shared/layout/Sidebar";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { FaRobot } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
+import Navbar from "@/components/shared/layout/Navbar";
+import { HiChat } from "react-icons/hi";
 
 export default function CalendarPage() {
   const [events, setEvents] = useState([]);
@@ -36,6 +38,8 @@ export default function CalendarPage() {
   const [hasGoogleCalendar, setHasGoogleCalendar] = useState(false);
   const { user } = useAuth();
   const searchParams = useSearchParams();
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileChat, setShowMobileChat] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -43,6 +47,13 @@ export default function CalendarPage() {
       fetchCalendarAndEvents(googleConnected === "true");
     }
   }, [user, searchParams]);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const fetchCalendarAndEvents = async (forceGoogleRefresh = false) => {
     if (!user) return;
@@ -283,47 +294,61 @@ export default function CalendarPage() {
 
   return (
     <div className="flex h-screen bg-gray-100 text-sm overflow-hidden">
-      <Sidebar />
-      {/* AI Chat Sidebar */}
-      <div
-        className={`${
-          isShrinkMode ? "w-[60px]" : "w-[300px]"
-        } border-r border-gray-200 bg-white transition-all max-h-screen overflow-hidden duration-300`}
-      >
-        <div className="h-full flex flex-col">
-          <div className="p-3 border-b border-gray-200 flex justify-between items-center">
-            {isShrinkMode ? (
-              <FaRobot className="text-gray-500 w-5" />
-            ) : (
-              <h2 className="text-base font-semibold text-gray-800">
-                AI Assistant
-              </h2>
-            )}
-            <button
-              onClick={() => setIsShrinkMode((prev) => !prev)}
-              className="text-gray-600 hover:text-gray-900"
-            >
-              {isShrinkMode ? (
-                <ChevronRightIcon className="w-4 h-4" />
-              ) : (
-                <ChevronLeftIcon className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            {/* Chat history could go here in the future */}
-          </div>
-          {!isShrinkMode && (
-            <TextPromptInput
-              onAddEvent={handleAddEvent}
-              calendarId={calendarId}
-              onLoadingChange={setIsAddingEvent}
-            />
-          )}
+      {/* Show Sidebar on desktop, Navbar on mobile */}
+      {isMobile ? (
+        <div className="fixed top-0 left-0 right-0 z-30 md:hidden">
+          <Navbar />
         </div>
-      </div>
+      ) : (
+        <Sidebar />
+      )}
+      {/* AI Chat Sidebar (desktop only) */}
+      {!isMobile && (
+        <div
+          className={`$${
+            isShrinkMode ? "w-[60px]" : "w-[300px]"
+          } border-r border-gray-200 bg-white transition-all max-h-screen overflow-hidden duration-300`}
+        >
+          <div className="h-full flex flex-col">
+            <div className="p-3 border-b border-gray-200 flex justify-between items-center">
+              {isShrinkMode ? (
+                <FaRobot className="text-gray-500 w-5" />
+              ) : (
+                <h2 className="text-base font-semibold text-gray-800">
+                  AI Assistant
+                </h2>
+              )}
+              <button
+                onClick={() => setIsShrinkMode((prev) => !prev)}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                {isShrinkMode ? (
+                  <ChevronRightIcon className="w-4 h-4" />
+                ) : (
+                  <ChevronLeftIcon className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {/* Chat history could go here in the future */}
+            </div>
+            {!isShrinkMode && (
+              <TextPromptInput
+                onAddEvent={handleAddEvent}
+                calendarId={calendarId}
+                onLoadingChange={setIsAddingEvent}
+              />
+            )}
+          </div>
+        </div>
+      )}
       {/* Calendar View */}
-      <main className="flex-1 p-4 overflow-hidden flex flex-col">
+      <main
+        className={`flex-1 p-4 overflow-hidden flex flex-col pt-16 md:pt-0 relative ${
+          isMobile && showMobileChat ? "pb-64" : ""
+        }`}
+      >
+        {/* pt-16 for mobile to offset fixed navbar */}
         {isLoading ? (
           <div className="flex items-center justify-center h-48">
             <div className="animate-spin rounded-full h-9 w-9 border-b-2 border-gray-900"></div>
@@ -342,7 +367,6 @@ export default function CalendarPage() {
             />
           </div>
         )}
-
         {isModalOpen && (
           <EventModal
             event={selectedEvent}
@@ -355,6 +379,39 @@ export default function CalendarPage() {
             onUpdate={selectedEvent?.isGoogleEvent ? null : handleUpdateEvent}
             isGoogleEvent={selectedEvent?.isGoogleEvent}
           />
+        )}
+        {/* Mobile floating chat icon and chat block */}
+        {isMobile && (
+          <>
+            <button
+              className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white rounded-full shadow-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-400 md:hidden"
+              onClick={() => setShowMobileChat((v) => !v)}
+              aria-label="Open AI Chat"
+            >
+              <HiChat className="w-6 h-6" />
+            </button>
+            {showMobileChat && (
+              <div className="fixed bottom-20 right-4 left-4 z-50 bg-white border border-gray-200 rounded-xl shadow-2xl p-2 md:hidden animate-fade-in flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold text-gray-700">
+                    AI Assistant
+                  </span>
+                  <button
+                    className="text-gray-400 hover:text-gray-700 text-xl px-2"
+                    onClick={() => setShowMobileChat(false)}
+                    aria-label="Close AI Chat"
+                  >
+                    ×
+                  </button>
+                </div>
+                <TextPromptInput
+                  onAddEvent={handleAddEvent}
+                  calendarId={calendarId}
+                  onLoadingChange={setIsAddingEvent}
+                />
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
