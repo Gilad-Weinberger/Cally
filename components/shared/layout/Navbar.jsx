@@ -6,16 +6,34 @@ import {
   MdPalette,
   MdAttachMoney,
   MdFeedback,
+  MdShield,
 } from "react-icons/md";
 import Image from "next/image";
 import PrimaryButton from "../ui/ButtonPrimary";
 import ButtonAccount from "../ui/ButtonAccount";
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const Navbar = () => {
   const { user } = useAuth();
+  const [dbUser, setDbUser] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const fetchDbUser = async () => {
+      if (user?.uid) {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) setDbUser(userSnap.data());
+        else setDbUser(null);
+      } else {
+        setDbUser(null);
+      }
+    };
+    fetchDbUser();
+  }, [user]);
 
   // Debounced scroll handler to reduce performance impact
   const handleScroll = useCallback(() => {
@@ -138,6 +156,14 @@ const Navbar = () => {
               <MdFeedback className="text-xl" />
               <span className="text-sm lg:text-base">Feedback</span>
             </Link>
+            <Link
+              href="/admin"
+              className="text-gray-800 hover:text-gray-600 flex items-center gap-2"
+              style={{ display: dbUser?.role === "admin" ? "flex" : "none" }}
+            >
+              <MdShield className="text-xl" />
+              <span className="text-sm lg:text-base">Admin</span>
+            </Link>
           </div>
 
           <div className="flex items-center">
@@ -181,12 +207,22 @@ const Navbar = () => {
                 <MdFeedback className="text-xl" />
                 Feedback
               </Link>
+              {dbUser?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  className="text-gray-800 hover:text-gray-600 flex items-center gap-2 px-2 py-1"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <MdShield className="text-xl" />
+                  Admin
+                </Link>
+              )}
             </div>
           </div>
         )}
       </div>
     ),
-    [mobileMenuOpen, toggleMobileMenu]
+    [mobileMenuOpen, toggleMobileMenu, dbUser]
   );
 
   // Navbar for non-authenticated users

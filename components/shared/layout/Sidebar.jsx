@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import {
   MdDashboard,
@@ -7,12 +7,30 @@ import {
   MdPalette,
   MdAttachMoney,
   MdFeedback,
+  MdShield,
 } from "react-icons/md";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const Sidebar = () => {
   const [isShrunk, setIsShrunk] = useState(false);
   const { user, logout } = useAuth();
+  const [dbUser, setDbUser] = useState(null);
+
+  useEffect(() => {
+    const fetchDbUser = async () => {
+      if (user?.uid) {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) setDbUser(userSnap.data());
+        else setDbUser(null);
+      } else {
+        setDbUser(null);
+      }
+    };
+    fetchDbUser();
+  }, [user]);
 
   const toggleShrink = () => {
     setIsShrunk(!isShrunk);
@@ -81,6 +99,17 @@ const Sidebar = () => {
           <MdFeedback className="text-base" />
           {!isShrunk && <span className="ml-1.5 text-sm">Feedback</span>}
         </Link>
+        {dbUser?.role === "admin" && (
+          <Link
+            href="/admin"
+            className={`flex items-center ${
+              isShrunk ? "justify-center px-1.5" : "px-3"
+            } py-1.5 text-gray-700 hover:bg-gray-100 rounded-lg`}
+          >
+            <MdShield className="text-base" />
+            {!isShrunk && <span className="ml-1.5 text-sm">Admin</span>}
+          </Link>
+        )}
       </nav>
       {user && (
         <div className="mt-auto border-t border-gray-200 p-1.5">
