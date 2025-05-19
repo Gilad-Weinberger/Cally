@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="Cally Architecture" id="architecture-diagram">
-        <mxGraphModel dx="1536" dy="970" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="910" dy="413" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -80,7 +80,7 @@
                     <mxGeometry x="80" y="520" width="940" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="api-layer" value="Next.js API Routes" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="server-layer" vertex="1">
-                    <mxGeometry x="30" y="40" width="870" height="70" as="geometry"/>
+                    <mxGeometry x="30" y="40" width="900" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="google-calendar-api" value="Google Calendar Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="api-layer" vertex="1">
                     <mxGeometry x="20" y="30" width="160" height="30" as="geometry"/>
@@ -89,28 +89,34 @@
                     <mxGeometry x="190" y="30" width="160" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="parse-date-api" value="Natural Language Date Parsing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="api-layer" vertex="1">
-                    <mxGeometry x="360" y="30" width="160" height="30" as="geometry"/>
+                    <mxGeometry x="360" y="30" width="190" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="lemonsqueezy-api" value="Payment Processing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="api-layer" vertex="1">
-                    <mxGeometry x="530" y="30" width="160" height="30" as="geometry"/>
+                    <mxGeometry x="560" y="30" width="160" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="webhook-api" value="External Webhooks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="api-layer" vertex="1">
-                    <mxGeometry x="700" y="30" width="160" height="30" as="geometry"/>
+                    <mxGeometry x="730" y="30" width="160" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="external-services" value="External Services" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=14;startSize=30;" parent="1" vertex="1">
-                    <mxGeometry y="670" width="450" height="120" as="geometry"/>
+                    <mxGeometry y="670" width="450" height="150" as="geometry"/>
                 </mxCell>
                 <mxCell id="google-calendar" value="Google Calendar API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="external-services" vertex="1">
-                    <mxGeometry x="30" y="40" width="180" height="30" as="geometry"/>
+                    <mxGeometry x="30" y="70" width="180" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="ai-services" value="AI Services (Google &amp; OpenAI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="external-services" vertex="1">
-                    <mxGeometry x="240" y="40" width="180" height="30" as="geometry"/>
+                    <mxGeometry x="240" y="70" width="180" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="lemon-squeezy" value="LemonSqueezy Payments" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="external-services" vertex="1">
-                    <mxGeometry x="30" y="80" width="180" height="30" as="geometry"/>
+                    <mxGeometry x="30" y="110" width="180" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="analytics" value="Vercel Analytics &amp; Insights" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="external-services" vertex="1">
-                    <mxGeometry x="240" y="80" width="180" height="30" as="geometry"/>
+                    <mxGeometry x="240" y="110" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="Generative AI Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="external-services">
+                    <mxGeometry x="30" y="40" width="180" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Google Calendar SDK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="external-services">
+                    <mxGeometry x="240" y="40" width="180" height="20" as="geometry"/>
                 </mxCell>
                 <mxCell id="database-layer" value="Database Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;startSize=30;" parent="1" vertex="1">
                     <mxGeometry x="490" y="670" width="590" height="120" as="geometry"/>
@@ -133,14 +139,14 @@
                 <mxCell id="colorcodes-collection" value="ColorCodes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="firebase-services" vertex="1">
                     <mxGeometry x="340" y="30" width="70" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="Events" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="firebase-services">
+                <mxCell id="4" value="Events" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="firebase-services" vertex="1">
                     <mxGeometry x="420" y="30" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="12" value="Feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="firebase-services">
+                <mxCell id="12" value="Feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="firebase-services" vertex="1">
                     <mxGeometry x="480" y="30" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="infrastructure" value="Infrastructure" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;startSize=30;" parent="1" vertex="1">
-                    <mxGeometry x="80" y="820" width="900" height="100" as="geometry"/>
+                    <mxGeometry x="80" y="850" width="900" height="100" as="geometry"/>
                 </mxCell>
                 <mxCell id="deployment" value="Vercel Deployment" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="infrastructure" vertex="1">
                     <mxGeometry x="10" y="35" width="450" height="55" as="geometry"/>
@@ -182,7 +188,7 @@
                 </mxCell>
                 <mxCell id="client-to-frontend-label" value="HTTP/HTTPS" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="client-to-frontend" connectable="0" vertex="1">
                     <mxGeometry x="-0.0667" y="-1" relative="1" as="geometry">
-                        <mxPoint as="offset"/>
+                        <mxPoint x="51" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="frontend-to-server" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;startArrow=classic;startFill=1;" parent="1" target="server-layer" edge="1">
@@ -192,44 +198,29 @@
                 </mxCell>
                 <mxCell id="frontend-to-server-label" value="Internal API Calls" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="frontend-to-server" connectable="0" vertex="1">
                     <mxGeometry x="-0.0333" y="1" relative="1" as="geometry">
-                        <mxPoint as="offset"/>
+                        <mxPoint x="49" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="server-to-external" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;startArrow=classic;startFill=1;" parent="1" source="server-layer" target="external-services" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="server-to-external-label" value="External API Integration" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="server-to-external" connectable="0" vertex="1">
-                    <mxGeometry x="-0.0333" y="-2" relative="1" as="geometry">
-                        <mxPoint x="2" y="3" as="offset"/>
-                    </mxGeometry>
-                </mxCell>
                 <mxCell id="server-to-database" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;startArrow=classic;startFill=1;" parent="1" source="server-layer" target="database-layer" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="server-to-database-label" value="Data Storage &amp; Retrieval" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="server-to-database" connectable="0" vertex="1">
-                    <mxGeometry x="0.0333" y="-2" relative="1" as="geometry">
-                        <mxPoint x="-2" y="3" as="offset"/>
-                    </mxGeometry>
                 </mxCell>
                 <mxCell id="layers-to-infrastructure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;" parent="1" source="database-layer" target="infrastructure" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="795" y="800"/>
-                            <mxPoint x="550" y="800"/>
+                            <mxPoint x="785" y="830"/>
+                            <mxPoint x="530" y="830"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="external-to-infrastructure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;" parent="1" source="external-services" target="infrastructure" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="305" y="800"/>
-                            <mxPoint x="550" y="800"/>
+                            <mxPoint x="225" y="830"/>
+                            <mxPoint x="530" y="830"/>
                         </Array>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="infrastructure-label" value="Hosted On" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="external-to-infrastructure" connectable="0" vertex="1">
-                    <mxGeometry x="0.6143" y="-2" relative="1" as="geometry">
-                        <mxPoint x="3" y="-10" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="auth-to-firebase" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;strokeWidth=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" source="auth-components" target="firebase-auth" edge="1">
@@ -240,11 +231,6 @@
                             <mxPoint x="40" y="640"/>
                             <mxPoint x="650" y="640"/>
                         </Array>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="auth-flow-label" value="Authentication Flow" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontColor=#B85450;" parent="auth-to-firebase" connectable="0" vertex="1">
-                    <mxGeometry x="0.2" y="2" relative="1" as="geometry">
-                        <mxPoint x="90" y="-12" as="offset"/>
                     </mxGeometry>
                 </mxCell>
             </root>

@@ -1,0 +1,169 @@
+<mxfile host="app.diagrams.net">
+    <diagram id="firestore-db-architecture" name="Firestore Database Architecture">
+        <mxGraphModel dx="1100" dy="825" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                
+                <!-- Title -->
+                <mxCell id="title" value="Caly - Firestore Database Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="200" y="20" width="700" height="30" as="geometry"/>
+                </mxCell>
+                
+                <!-- Main Firestore Database Container -->
+                <mxCell id="firestore-container" value="Firestore Database" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=16;startSize=30;" vertex="1" parent="1">
+                    <mxGeometry x="50" y="70" width="1000" height="750" as="geometry"/>
+                </mxCell>
+                
+                <!-- Users Collection -->
+                <mxCell id="users-collection" value="Collection: users" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="firestore-container">
+                    <mxGeometry x="50" y="50" width="380" height="250" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="users-document" value="Document: {userId}" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="users-collection">
+                    <mxGeometry x="20" y="40" width="340" height="190" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="users-fields" value="id: string (user UID)&#xa;email: string&#xa;createdAt: timestamp&#xa;customerId: string (LemonSqueezy)&#xa;variantId: string (LemonSqueezy Plan)&#xa;hasAccess: boolean&#xa;role: string (client/admin)&#xa;updatedAt: timestamp&#xa;googleCalendar: {&#xa;  connected: boolean&#xa;  accessToken: string&#xa;  refreshToken: string&#xa;}" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontSize=12;" vertex="1" parent="users-document">
+                    <mxGeometry x="10" y="30" width="320" height="150" as="geometry"/>
+                </mxCell>
+                
+                <!-- Calendars Collection -->
+                <mxCell id="calendars-collection" value="Collection: calendars" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="firestore-container">
+                    <mxGeometry x="50" y="320" width="380" height="200" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="calendars-document" value="Document: {calendarId}" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="calendars-collection">
+                    <mxGeometry x="20" y="40" width="340" height="140" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="calendars-fields" value="id: string (auto-generated)&#xa;name: string&#xa;userId: string (reference to users)&#xa;events: array of string (event IDs)&#xa;createdAt: timestamp" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontSize=12;" vertex="1" parent="calendars-document">
+                    <mxGeometry x="10" y="30" width="320" height="100" as="geometry"/>
+                </mxCell>
+                
+                <!-- Events Collection -->
+                <mxCell id="events-collection" value="Collection: events" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="firestore-container">
+                    <mxGeometry x="50" y="540" width="380" height="190" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="events-document" value="Document: {eventId}" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="events-collection">
+                    <mxGeometry x="20" y="40" width="340" height="130" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="events-fields" value="id: string (auto-generated)&#xa;title: string&#xa;startDate: string (YYYY-MM-DD)&#xa;endDate: string (YYYY-MM-DD)&#xa;startTime: string (HH:MM)&#xa;endTime: string (HH:MM)&#xa;color: string (hex color code)&#xa;description: string&#xa;calendarId: string (reference to calendars)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontSize=12;" vertex="1" parent="events-document">
+                    <mxGeometry x="10" y="30" width="320" height="90" as="geometry"/>
+                </mxCell>
+                
+                <!-- ColorCodes Collection -->
+                <mxCell id="colorcodes-collection" value="Collection: colorCodes" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="firestore-container">
+                    <mxGeometry x="570" y="50" width="380" height="200" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="colorcodes-document" value="Document: {colorCodeId}" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="colorcodes-collection">
+                    <mxGeometry x="20" y="40" width="340" height="140" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="colorcodes-fields" value="id: string (auto-generated)&#xa;userId: string (reference to users)&#xa;colorCodes: object (map of event categories to colors)&#xa;createdAt: timestamp" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontSize=12;" vertex="1" parent="colorcodes-document">
+                    <mxGeometry x="10" y="30" width="320" height="100" as="geometry"/>
+                </mxCell>
+                
+                <!-- Feedback Collection -->
+                <mxCell id="feedback-collection" value="Collection: feedback" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="firestore-container">
+                    <mxGeometry x="570" y="270" width="380" height="200" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="feedback-document" value="Document: {feedbackId}" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="feedback-collection">
+                    <mxGeometry x="20" y="40" width="340" height="140" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="feedback-fields" value="id: string (auto-generated)&#xa;title: string&#xa;description: string&#xa;userId: string (reference to users)&#xa;userName: string&#xa;votes: number&#xa;voters: array of string (user IDs)&#xa;commentCount: number&#xa;handled: boolean&#xa;createdAt: timestamp" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontSize=12;" vertex="1" parent="feedback-document">
+                    <mxGeometry x="10" y="30" width="320" height="100" as="geometry"/>
+                </mxCell>
+                
+                <!-- Feedback Comments Collection -->
+                <mxCell id="feedbackComments-collection" value="Collection: feedbackComments" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="firestore-container">
+                    <mxGeometry x="570" y="490" width="380" height="200" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="feedbackComments-document" value="Document: {commentId}" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="feedbackComments-collection">
+                    <mxGeometry x="20" y="40" width="340" height="140" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="feedbackComments-fields" value="feedbackId: string (reference to feedback)&#xa;userId: string (reference to users)&#xa;userName: string&#xa;userEmail: string&#xa;text: string&#xa;createdAt: timestamp" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontSize=12;" vertex="1" parent="feedbackComments-document">
+                    <mxGeometry x="10" y="30" width="320" height="100" as="geometry"/>
+                </mxCell>
+                
+                <!-- GoogleCalendarCache Collection -->
+                <mxCell id="googleCalendarCache-collection" value="Collection: googleCalendarCache" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="firestore-container">
+                    <mxGeometry x="570" y="710" width="380" height="30" as="geometry"/>
+                </mxCell>
+                
+                <!-- Relationships -->
+                <!-- Users -> Calendars -->
+                <mxCell id="users-to-calendars" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="firestore-container" source="users-collection" target="calendars-collection">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                
+                <!-- Calendars -> Events -->
+                <mxCell id="calendars-to-events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="firestore-container" source="calendars-collection" target="events-collection">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                
+                <!-- Users -> ColorCodes -->
+                <mxCell id="users-to-colorcodes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERone;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="firestore-container" source="users-collection" target="colorcodes-collection">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                
+                <!-- Users -> Feedback -->
+                <mxCell id="users-to-feedback" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="firestore-container" source="users-collection" target="feedback-collection">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="470" y="238"/>
+                            <mxPoint x="470" y="370"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Feedback -> FeedbackComments -->
+                <mxCell id="feedback-to-comments" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="firestore-container" source="feedback-collection" target="feedbackComments-collection">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                
+                <!-- Users -> FeedbackComments -->
+                <mxCell id="users-to-comments" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="firestore-container" source="users-collection" target="feedbackComments-collection">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="490" y="113"/>
+                            <mxPoint x="490" y="640"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Users -> GoogleCalendarCache -->
+                <mxCell id="users-to-cache" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERone;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="firestore-container" source="users-collection" target="googleCalendarCache-collection">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="335" y="725"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Legend -->
+                <mxCell id="legend" value="Legend" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+                    <mxGeometry x="900" y="20" width="150" height="40" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="legend-one-to-many" value="One-to-Many" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="970" y="40" width="80" height="20" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="legend-one-to-many-symbol" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="910" y="50" as="sourcePoint"/>
+                        <mxPoint x="960" y="50" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile> 
