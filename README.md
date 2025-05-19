@@ -143,19 +143,6 @@ async function fetchCalendarAndEvents() {
 }
 ```
 
-### SQL Injection Protection
-
-The application uses parameterized queries to prevent SQL injection:
-
-```javascript
-// Using Firebase Firestore with parameterized queries
-const userRef = collection(db, "users");
-const q = query(
-  userRef,
-  where("email", "==", userInput) // Parameter is passed separately
-);
-```
-
 ## Opening the Diagrams
 
 To open and edit these diagrams:
