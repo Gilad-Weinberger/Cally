@@ -151,7 +151,7 @@ const Hero = () => {
             <div className="flex -space-x-1.5 xs:-space-x-2 mr-0 xs:mr-2 sm:mr-4 mb-1.5 xs:mb-2 sm:mb-0">
               <div className="h-6 w-6 xs:h-8 xs:w-8 sm:h-10 sm:w-10 rounded-full border-2 border-white overflow-hidden">
                 <Image
-                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  src="/user1.jpg"
                   alt="User"
                   className="h-full w-full object-cover"
                   width={40}
@@ -160,7 +160,7 @@ const Hero = () => {
               </div>
               <div className="h-6 w-6 xs:h-8 xs:w-8 sm:h-10 sm:w-10 rounded-full border-2 border-white overflow-hidden">
                 <Image
-                  src="https://randomuser.me/api/portraits/men/61.jpg"
+                  src="/user2.jpg"
                   alt="User"
                   className="h-full w-full object-cover"
                   width={40}
@@ -169,7 +169,7 @@ const Hero = () => {
               </div>
               <div className="h-6 w-6 xs:h-8 xs:w-8 sm:h-10 sm:w-10 rounded-full border-2 border-white overflow-hidden">
                 <Image
-                  src="https://randomuser.me/api/portraits/men/76.jpg"
+                  src="/user3.jpg"
                   alt="User"
                   className="h-full w-full object-cover"
                   width={40}
