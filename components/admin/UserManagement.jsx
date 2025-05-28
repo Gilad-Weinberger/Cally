@@ -6,6 +6,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
 import LoadingSpinner from "@/components/shared/ui/LoadingSpinner";
@@ -16,7 +17,10 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingUserId, setDeletingUserId] = useState(null);
+  const [updatingUserId, setUpdatingUserId] = useState(null);
   const [error, setError] = useState("");
+
+  const availableRoles = ["client", "admin"];
 
   useEffect(() => {
     const fetchDbUser = async () => {
@@ -67,6 +71,33 @@ const UserManagement = () => {
     }
   };
 
+  const handleRoleChange = async (userId, newRole) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to change this user's role to ${newRole}?`
+      )
+    )
+      return;
+
+    setUpdatingUserId(userId);
+    try {
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        role: newRole,
+      });
+
+      // Update local state
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+      );
+    } catch (err) {
+      setError("Failed to update user role.");
+      console.error("Error updating user role:", err);
+    } finally {
+      setUpdatingUserId(null);
+    }
+  };
+
   if (!dbUser || dbUser.role !== "admin")
     return (
       <div className="p-8 text-center text-red-500 font-semibold">
@@ -98,8 +129,25 @@ const UserManagement = () => {
                   ID: {u.id}
                 </div>
                 <div className="font-medium text-gray-800">{u.email}</div>
-                <div className="text-sm text-gray-600">
-                  Role: <span className="font-semibold">{u.role}</span>
+                <div className="text-sm text-gray-600 flex items-center gap-2">
+                  Role:
+                  <select
+                    value={u.role}
+                    onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                    disabled={updatingUserId === u.id}
+                    className="font-semibold bg-white border border-gray-300 rounded px-2 py-1 text-sm disabled:opacity-50"
+                  >
+                    {availableRoles.map((role) => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                  {updatingUserId === u.id && (
+                    <div className="w-4 h-4">
+                      <LoadingSpinner />
+                    </div>
+                  )}
                 </div>
                 <button
                   className="mt-2 bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition disabled:opacity-50"
@@ -128,7 +176,29 @@ const UserManagement = () => {
                   <tr key={u.id} className="hover:bg-gray-50">
                     <td className="py-2 px-4 border break-all">{u.id}</td>
                     <td className="py-2 px-4 border">{u.email}</td>
-                    <td className="py-2 px-4 border">{u.role}</td>
+                    <td className="py-2 px-4 border">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={u.role}
+                          onChange={(e) =>
+                            handleRoleChange(u.id, e.target.value)
+                          }
+                          disabled={updatingUserId === u.id}
+                          className="bg-white border border-gray-300 rounded px-2 py-1 text-sm disabled:opacity-50"
+                        >
+                          {availableRoles.map((role) => (
+                            <option key={role} value={role}>
+                              {role}
+                            </option>
+                          ))}
+                        </select>
+                        {updatingUserId === u.id && (
+                          <div className="w-4 h-4">
+                            <LoadingSpinner />
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-2 px-4 border">
                       <button
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50"
