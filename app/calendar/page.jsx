@@ -24,6 +24,7 @@ import { FaRobot } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/shared/layout/Navbar";
 import { HiChat } from "react-icons/hi";
+import Toast from "@/components/shared/ui/Toast";
 
 export default function CalendarPage() {
   const [events, setEvents] = useState([]);
@@ -36,6 +37,11 @@ export default function CalendarPage() {
   const [calendarId, setCalendarId] = useState(null);
   const [isShrinkMode, setIsShrinkMode] = useState(false);
   const [hasGoogleCalendar, setHasGoogleCalendar] = useState(false);
+  const [toast, setToast] = useState({
+    message: "",
+    type: "info",
+    isVisible: false,
+  });
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [isMobile, setIsMobile] = useState(false);
@@ -119,12 +125,24 @@ export default function CalendarPage() {
     try {
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
-      const hasAccess =
-        userDoc.exists() && userDoc.data().googleCalendar?.connected;
-      setHasGoogleCalendar(hasAccess);
-      return hasAccess;
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const googleCalendarData = userData.googleCalendar;
+
+        // Check if connected and no error state
+        const hasAccess =
+          googleCalendarData?.connected && !googleCalendarData?.error;
+
+        setHasGoogleCalendar(hasAccess);
+        return hasAccess;
+      }
+
+      setHasGoogleCalendar(false);
+      return false;
     } catch (error) {
       console.error("Error checking Google Calendar access:", error);
+      setHasGoogleCalendar(false);
       return false;
     }
   };
@@ -192,20 +210,35 @@ export default function CalendarPage() {
       console.log("Request URL:", url);
 
       const response = await fetch(url);
+      const data = await response.json();
+
+      // Handle authentication expired case
+      if (response.status === 401 && data.reconnectNeeded) {
+        console.log(
+          "Google Calendar authentication expired, user needs to reconnect"
+        );
+
+        // Update local state to reflect disconnected status
+        setHasGoogleCalendar(false);
+        setGoogleEvents([]);
+
+        // Show user-friendly toast notification
+        showToast(
+          "Google Calendar connection expired. Please reconnect to continue syncing events.",
+          "warning"
+        );
+
+        return [];
+      }
 
       if (!response.ok) {
-        const errorText = await response.text();
         console.error(
           "Google Calendar API error response:",
           response.status,
-          errorText
+          data.error || "Unknown error"
         );
-        throw new Error(
-          `Failed to fetch Google Calendar events: ${response.status} ${response.statusText}`
-        );
+        return [];
       }
-
-      const data = await response.json();
 
       if (data.events) {
         console.log(
@@ -290,6 +323,15 @@ export default function CalendarPage() {
     // If it's a Google Calendar event, we'll display it differently
     setSelectedEvent(event);
     setIsModalOpen(true);
+  };
+
+  // Function to show toast notifications
+  const showToast = (message, type = "info") => {
+    setToast({ message, type, isVisible: true });
+  };
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, isVisible: false }));
   };
 
   return (
@@ -414,6 +456,9 @@ export default function CalendarPage() {
           </>
         )}
       </main>
+      {toast.isVisible && (
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+      )}
     </div>
   );
 }

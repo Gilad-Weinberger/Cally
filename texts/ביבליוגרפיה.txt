@@ -1,0 +1,27 @@
+ביבליוגרפיה - פרויקט Caly AI
+
+מקורות מידע שנעשה בהם שימוש במהלך פיתוח הפרויקט:
+
+תיעוד רשמי וטכני:
+
+Next.js Team. (2024). Next.js Documentation - App Router. Vercel. https://nextjs.org/docs
+
+Firebase Team. (2024). Firebase Documentation - Authentication & Firestore. Google. https://firebase.google.com/docs
+
+Tailwind Labs. (2024). Tailwind CSS Documentation. https://tailwindcss.com/docs
+
+LemonSqueezy. (2024). LemonSqueezy API Documentation. https://docs.lemonsqueezy.com/
+
+Google Developers. (2024). Google Calendar API Documentation. Google. https://developers.google.com/calendar/api/guides/overview
+
+React Team. (2024). React Documentation - Hooks and State Management. Meta. https://react.dev/
+
+מקורות למידה ופיתוח:
+
+MDN Web Docs. (2024). JavaScript Guide and Reference. Mozilla. https://developer.mozilla.org/en-US/docs/Web/JavaScript
+
+כלי פיתוח:
+
+Cursor Team. (2024). Cursor IDE Documentation and Features. Cursor. https://cursor.sh/
+
+הערה: המקורות הרשומים לעיל הם אלה שנעשה בהם שימוש ישיר במהלך פיתוח הפרויקט, על בסיס הטכנולוגיות והכלים הנראים בקוד ובמבנה הפרויקט. 

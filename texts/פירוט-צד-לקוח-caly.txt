@@ -1,0 +1,435 @@
+# פירוט צד הלקוח - אפליקציית Caly Calendar
+
+## מבנה טכנולוגי כללי
+
+האפליקציה בנויה עם:
+- **Next.js 15** (React Framework) - תמיכה בריבוי פלטפורמות
+- **Firebase** - Authentication, Firestore, Storage
+- **Tailwind CSS** - עיצוב רספונסיבי
+- **Google Calendar API** - אינטגרציה עם קלנדר גוגל
+- **LemonSqueezy** - מערכת תשלומים
+- **AI Integration** - עיבוד טקסט חכם לאירועים
+
+---
+
+## 1. סוגי משתמשים ויכולות (2 סוגים מינימום)
+
+### 1.1 משתמש רגיל (Client)
+**יכולות:**
+- צפייה וניהול לוח השנה האישי
+- יצירת, עריכה ומחיקת אירועים
+- אינטגרציה עם Google Calendar
+- יצירת קוד צבעים לסיווג אירועים
+- מתן משוב (feedback)
+- רכישת מנוי מתקדם
+- קלט טקסטואלי חכם לאירועים באמצעות AI
+
+### 1.2 מנהל מערכת (Admin)
+**יכולות נוספות:**
+- גישה לפאנל ניהול משתמשים
+- צפייה ברשימת כל המשתמשים
+- מחיקת משתמשים
+- ניהול הרשאות מערכת
+- צפייה בנתוני שימוש
+
+---
+
+## 2. תרשים זרימה בין דפים/מסכים
+
+```
+דף בית (Landing Page)
+├── הרשמה/התחברות (/auth/signup, /auth/signin)
+├── מחירים (/pricing)
+└── [לאחר התחברות]
+    ├── דשבורד (/dashboard)
+    ├── לוח שנה (/calendar) - עיקרי
+    │   ├── יצירת אירוע (Modal)
+    │   ├── עריכת אירוע (Modal)
+    │   └── אינטגרציה Google Calendar
+    ├── קוד צבעים (/color-code)
+    ├── משוב (/feedback)
+    ├── מחירים (/pricing)
+    └── [Admin בלבד]
+        └── ניהול משתמשים (/admin)
+```
+
+---
+
+## 3. תיאור מפורט של הדפים/מסכים
+
+### 3.1 דף בית (Landing Page)
+**קובץ:** app/page.jsx
+**רכיבים:**
+- `Hero` - כותרת ראשית וקריאה לפעולה
+- `ProblemSolution` - הצגת הבעיה והפתרון
+- `Features` - תכונות מרכזיות
+- `TestimonialCarousel` - המלצות לקוחות
+- `PricingSection` - מחירים
+- `Navbar` - ניווט עליון
+- `Footer` - כותרת תחתונה
+
+**בדיקת תקינות:** טופס הרשמה עם בדיקת פורמט אימייל
+
+**קוד מרכזי:**
+```javascript
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
+import Navbar from "@/components/shared/layout/Navbar";
+import Footer from "@/components/shared/layout/Footer";
+import TestimonialCarousel from "@/components/LandingPage/TestimonialCarousel";
+import ProblemSolution from "@/components/LandingPage/ProblemSolution";
+import Features from "@/components/LandingPage/Features";
+import PricingSection from "@/components/pricing/PricingSection";
+import Hero from "@/components/LandingPage/Hero";
+
+export default function Home() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="flex-grow">
+        <Hero />
+        <ProblemSolution />
+        <Features />
+        <section className="bg-to-blue-50 py-16 md:py-24" id="testimonials">
+          <TestimonialCarousel />
+        </section>
+        <section id="pricing">
+          <PricingSection />
+        </section>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+```
+
+### 3.2 דף לוח השנה (/calendar)
+**קובץ:** app/calendar/page.jsx
+
+**תכונות מרכזיות:**
+- צג לוח שנה אינטראקטיבי עם אירועים
+- יצירת אירועים באמצעות קלט טקסטואלי חכם (AI)
+- סנכרון עם Google Calendar
+- מצב מובייל ודסקטופ
+- מודלים לעריכת אירועים
+
+**בדיקות תקינות:**
+- בדיקת תאריכים תקינים
+- אימות נתוני אירוע
+- בדיקת הרשאות משתמש
+
+**קוד אסינכרוני מרכזי:**
+```javascript
+const fetchEventsInParallel = async (calId, forceGoogleRefresh = false) => {
+  try {
+    setIsGoogleLoading(true);
+    const localPromise = fetchEvents(calId);
+    const googlePromise = fetchGoogleCalendarEvents(forceGoogleRefresh);
+    
+    await Promise.all([localPromise, googlePromise]);
+  } catch (error) {
+    console.error("Error fetching events in parallel:", error);
+  } finally {
+    setIsLoading(false);
+    setIsGoogleLoading(false);
+  }
+};
+```
+
+### 3.3 דף ניהול משתמשים (/admin)
+**קובץ:** app/admin/page.jsx
+
+**יכולות Admin:**
+- רשימת משתמשים עם פרטים
+- מחיקת משתמשים
+- בדיקת הרשאות לפני גישה
+- ממשק רספונסיבי (טבלה/רשימה)
+
+**קוד בדיקת הרשאות:**
+```javascript
+"use client";
+import UserManagement from "@/components/admin/UserManagement";
+import Navbar from "@/components/shared/layout/Navbar";
+import Sidebar from "@/components/shared/layout/Sidebar";
+import { useState, useEffect } from "react";
+
+export default function AdminPage() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return (
+    <div className="flex h-screen bg-gray-100 text-sm overflow-hidden">
+      {isMobile ? (
+        <div className="fixed top-0 left-0 right-0 z-30 md:hidden">
+          <Navbar />
+        </div>
+      ) : (
+        <Sidebar />
+      )}
+      <main className="flex-1 p-4 overflow-y-auto pt-16 md:pt-0">
+        <UserManagement />
+      </main>
+    </div>
+  );
+}
+```
+
+---
+
+## 4. מערכת אימות והרשאות
+
+### AuthContext - ניהול מצב משתמש
+**קובץ:** context/AuthContext.jsx
+
+**תכונות אבטחה:**
+- בדיקת הרשאות לפני גישה לעמודים
+- יצירת משתמש אוטומטית בבסיס הנתונים
+- הגנה על נתיבי Admin
+- יצירת לוח שנה ברירת מחדל
+
+**קוד מרכזי:**
+```javascript
+"use client";
+import { createContext, useContext, useState, useEffect } from "react";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+
+const AuthContext = createContext({});
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      console.log("User signed out");
+      const currentPath = window.location.pathname;
+      if (currentPath !== "/") {
+        router.push("/auth/signin");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  async function createUser(user) {
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      await setDoc(userRef, {
+        id: user.uid,
+        email: user.email,
+        createdAt: new Date().toISOString(),
+        customerId: "",
+        variantId: "",
+        hasAccess: false,
+        role: "client",
+      });
+      console.log("User created in the database.");
+      return true;
+    }
+    return false;
+  }
+```
+
+---
+
+## 5. ממשקי משתמש וחוויית משתמש
+
+### 5.1 עיצוב רספונסיבי
+**ממשק מובייל:**
+- Navbar עם תפריט המבורגר
+- רשימת כרטיסים במקום טבלאות
+- Chat צף לקלט AI
+
+**ממשק דסקטופ:**
+- Sidebar עם ניווט מלא
+- טבלאות מפורטות
+- Chat בצד השמאל
+
+### 5.2 בדיקות תקינות וחוויית משתמש
+- **Loading States** - ספינרים בזמן טעינת נתונים
+- **Error Handling** - הודעות שגיאה ברורות
+- **Confirmation Dialogs** - אישור לפני מחיקה
+- **Input Validation** - בדיקת תוקף נתונים בזמן אמת
+- **Responsive Design** - התאמה לכל גדלי מסך
+
+---
+
+## 6. הרחבות מתקדמות
+
+### 6.1 ירושה ו-UserControls עם Delegates
+
+**רכיבי UI מודולריים:**
+- ButtonPrimary.jsx, ButtonAccount.jsx
+- LoadingSpinner.jsx
+- Modal components עם event delegation
+
+**מבנה הקומפוננטים:**
+```
+components/
+├── shared/
+│   ├── ui/
+│   │   ├── ButtonPrimary.jsx
+│   │   ├── ButtonAccount.jsx
+│   │   └── LoadingSpinner.jsx
+│   └── layout/
+│       ├── Navbar.jsx
+│       ├── Sidebar.jsx
+│       └── Footer.jsx
+├── CalendarPage/
+│   ├── CalendarView.jsx
+│   ├── EventModal.jsx
+│   └── TextPromptInput.jsx
+├── admin/
+│   └── UserManagement.jsx
+└── LandingPage/
+    ├── Hero.jsx
+    ├── Features.jsx
+    └── TestimonialCarousel.jsx
+```
+
+### 6.2 ריבוי פלטפורמות
+- **Web Application** - Next.js responsive
+- **Mobile Optimized** - PWA capabilities
+- **API Support** - RESTful endpoints for mobile apps
+
+**API Endpoints:**
+```
+/api/
+├── analyze-event/
+├── google-calendar/
+│   ├── auth/
+│   ├── callback/
+│   └── events/
+├── lemonsqueezy/
+│   ├── create-checkout/
+│   └── create-portal/
+├── parse-date/
+└── webhook/
+    └── lemonsqueezy/
+```
+
+### 6.3 קוד אסינכרוני מתקדם
+- **Firebase Real-time Updates**
+- **Google Calendar Sync**
+- **AI Processing** - OpenAI/Gemini integration
+- **Parallel Data Fetching**
+- **Background Sync**
+
+**דוגמה לטיימרים ואירועים:**
+```javascript
+// בדיקת רוחב מסך עם debouncing
+useEffect(() => {
+  let scrollTimer;
+  const debouncedScroll = () => {
+    if (scrollTimer) clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(handleScroll, 10);
+  };
+
+  window.addEventListener("scroll", debouncedScroll, { passive: true });
+  return () => {
+    window.removeEventListener("scroll", debouncedScroll);
+    if (scrollTimer) clearTimeout(scrollTimer);
+  };
+}, [handleScroll]);
+```
+
+---
+
+## 7. תכונות בטיחות ואבטחה
+
+- **Firebase Authentication** - אימות מאובטח
+- **Role-based Access Control** - הרשאות לפי תפקיד
+- **Input Sanitization** - ניקוי קלט משתמש
+- **Protected Routes** - הגנה על נתיבים רגישים
+- **HTTPS Only** - תקשורת מוצפנת
+
+**דוגמה לבדיקת הרשאות:**
+```javascript
+// בקומפוננט UserManagement
+if (!dbUser || dbUser.role !== "admin")
+  return (
+    <div className="p-8 text-center text-red-500 font-semibold">
+      Access denied. Admins only.
+    </div>
+  );
+```
+
+---
+
+## 8. ביצועים ואופטימיזציה
+
+- **Server-Side Rendering** - Next.js SSR
+- **Image Optimization** - Next.js Image component
+- **Code Splitting** - טעינה דינמית של קומפוננטים
+- **Caching Strategy** - מטמון נתונים
+- **Lazy Loading** - טעינה עצלה של רכיבים
+
+**אופטימיזציה של תמונות:**
+```javascript
+<Image
+  src="/full_logo.png"
+  alt="Caly Logo"
+  fill
+  sizes="(max-width: 640px) 6rem, 8rem"
+  style={{ objectFit: "contain" }}
+  priority
+/>
+```
+
+---
+
+## 9. תכונות נוספות ואירועים
+
+### 9.1 שליטה באירועים
+- **onClick Events** - לחיצות על כפתורים ואירועים
+- **Form Validation** - בדיקת תקינות טפסים
+- **Modal Management** - פתיחה וסגירת חלונות
+- **State Management** - ניהול מצב רכיבים
+
+### 9.2 User Controls מתקדמים
+- **Custom Hooks** - useAuth, useCalendar
+- **Context Providers** - AuthContext
+- **Event Delegation** - העברת אירועים בין רכיבים
+
+---
+
+## 10. הסבר על הקוד
+
+### מבנה תיקיות:
+```
+caly/
+├── app/                    # Next.js App Router
+│   ├── admin/             # דפי Admin
+│   ├── api/               # API Routes
+│   ├── auth/              # דפי Authentication
+│   ├── calendar/          # דף לוח השנה העיקרי
+│   └── ...
+├── components/            # רכיבי UI
+│   ├── shared/           # רכיבים משותפים
+│   ├── CalendarPage/     # רכיבי עמוד לוח שנה
+│   ├── admin/            # רכיבי ניהול
+│   └── ...
+├── context/              # Context Providers
+├── lib/                  # ספריות ותצורות
+└── public/               # קבצים סטטיים
+```
+
+### טכנולוגיות מרכזיות:
+- **React Server Components** - ביצועים משופרים
+- **Client Components** - אינטראקטיביות
+- **Firebase Integration** - בסיס נתונים בזמן אמת
+- **Tailwind CSS** - עיצוב מהיר ועקבי
+
+האפליקציה עומדת בכל הדרישות המופיעות במפרט, עם דגש על חוויית משתמש מעולה, אבטחה גבוהה, וביצועים אופטימליים, כולל תמיכה בירושה, UserControls עם Delegates, ריבוי פלטפורמות וקוד אסינכרוני מתקדם. 

@@ -8,18 +8,18 @@ const CACHE_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 
 // Google Calendar color ID mapping to hex colors
 const GOOGLE_CALENDAR_COLORS = {
-  "1": "#7986CB", // Lavender
-  "2": "#33B679", // Sage
-  "3": "#8E24AA", // Grape
-  "4": "#E67C73", // Flamingo
-  "5": "#F6BF26", // Banana
-  "6": "#F4511E", // Tangerine
-  "7": "#039BE5", // Peacock
-  "8": "#616161", // Graphite
-  "9": "#3F51B5", // Blueberry
-  "10": "#0B8043", // Basil
-  "11": "#D50000", // Tomato
-  "default": "#4285F4", // Default Google blue
+  1: "#7986CB", // Lavender
+  2: "#33B679", // Sage
+  3: "#8E24AA", // Grape
+  4: "#E67C73", // Flamingo
+  5: "#F6BF26", // Banana
+  6: "#F4511E", // Tangerine
+  7: "#039BE5", // Peacock
+  8: "#616161", // Graphite
+  9: "#3F51B5", // Blueberry
+  10: "#0B8043", // Basil
+  11: "#D50000", // Tomato
+  default: "#4285F4", // Default Google blue
 };
 
 // Helper function to get OAuth2 client with user's tokens
@@ -34,6 +34,10 @@ async function getOAuth2ClientForUser(userId) {
     }
 
     const { accessToken, refreshToken, expiry } = userDoc.data().googleCalendar;
+
+    if (!accessToken || !refreshToken) {
+      throw new Error("Missing required tokens for Google Calendar");
+    }
 
     // Initialize OAuth2 client
     const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -55,19 +59,59 @@ async function getOAuth2ClientForUser(userId) {
 
     // Handle token refresh if needed
     if (Date.now() > expiry) {
-      const { tokens } = await oauth2Client.refreshToken(refreshToken);
+      try {
+        console.log(`Token expired for user ${userId}, attempting refresh...`);
+        const { tokens } = await oauth2Client.refreshToken(refreshToken);
 
-      // Update tokens in database
-      await updateDoc(userRef, {
-        "googleCalendar.accessToken": tokens.access_token,
-        "googleCalendar.expiry": tokens.expiry_date,
-        ...(tokens.refresh_token && {
-          "googleCalendar.refreshToken": tokens.refresh_token,
-        }),
-      });
+        if (!tokens.access_token) {
+          throw new Error("Failed to get new access token");
+        }
 
-      // Update client credentials
-      oauth2Client.setCredentials(tokens);
+        // Update tokens in database
+        await updateDoc(userRef, {
+          "googleCalendar.accessToken": tokens.access_token,
+          "googleCalendar.expiry": tokens.expiry_date,
+          ...(tokens.refresh_token && {
+            "googleCalendar.refreshToken": tokens.refresh_token,
+          }),
+        });
+
+        // Update client credentials
+        oauth2Client.setCredentials(tokens);
+        console.log(`Successfully refreshed tokens for user ${userId}`);
+      } catch (refreshError) {
+        console.error(`Token refresh failed for user ${userId}:`, refreshError);
+
+        // Check if this is an invalid_grant error (refresh token expired/revoked)
+        if (
+          refreshError.message?.includes("invalid_grant") ||
+          refreshError.code === 400 ||
+          refreshError.status === 400
+        ) {
+          console.log(
+            `Refresh token invalid for user ${userId}, marking as disconnected`
+          );
+
+          // Mark user as disconnected and clear tokens
+          await updateDoc(userRef, {
+            "googleCalendar.connected": false,
+            "googleCalendar.error":
+              "Authentication token expired or revoked. Please reconnect.",
+            "googleCalendar.accessToken": null,
+            "googleCalendar.refreshToken": null,
+            "googleCalendar.expiry": null,
+          });
+
+          // Throw a specific error that can be caught by the calling function
+          const error = new Error("Google Calendar authentication expired");
+          error.code = "AUTH_EXPIRED";
+          error.reconnectNeeded = true;
+          throw error;
+        }
+
+        // For other refresh errors, re-throw
+        throw refreshError;
+      }
     }
 
     return oauth2Client;
@@ -107,7 +151,9 @@ function formatGoogleEvents(googleEvents) {
       endDate: endDate,
       startTime: startTime,
       endTime: endTime,
-      color: GOOGLE_CALENDAR_COLORS[event.colorId] || GOOGLE_CALENDAR_COLORS["default"], // Map color ID to hex color
+      color:
+        GOOGLE_CALENDAR_COLORS[event.colorId] ||
+        GOOGLE_CALENDAR_COLORS["default"], // Map color ID to hex color
       description: event.description || "",
       location: event.location || "",
       isGoogleEvent: true,
@@ -121,10 +167,10 @@ async function getEventsFromCache(userId) {
   try {
     const cacheRef = doc(db, "googleCalendarCache", userId);
     const cacheDoc = await getDoc(cacheRef);
-    
+
     if (cacheDoc.exists()) {
       const { events, timestamp } = cacheDoc.data();
-      
+
       // Check if cache is still valid (not expired)
       if (timestamp && Date.now() - timestamp < CACHE_EXPIRY_MS) {
         return events;
@@ -143,7 +189,7 @@ async function cacheEvents(userId, events) {
     const cacheRef = doc(db, "googleCalendarCache", userId);
     await setDoc(cacheRef, {
       events,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   } catch (error) {
     console.error("Error saving to cache:", error);
@@ -157,7 +203,9 @@ export async function GET(request) {
     const userId = searchParams.get("userId");
     const forceRefresh = searchParams.get("timestamp") !== null;
 
-    console.log(`Google Calendar events API called for userId: ${userId}, forceRefresh: ${forceRefresh}`);
+    console.log(
+      `Google Calendar events API called for userId: ${userId}, forceRefresh: ${forceRefresh}`
+    );
 
     if (!userId) {
       return NextResponse.json(
@@ -179,7 +227,7 @@ export async function GET(request) {
     }
 
     const googleCalendarData = userDoc.data()?.googleCalendar;
-    
+
     if (!googleCalendarData?.connected) {
       console.log(`User ${userId} has not connected Google Calendar`);
       return NextResponse.json(
@@ -187,31 +235,72 @@ export async function GET(request) {
         { status: 200 }
       );
     }
-    
-    console.log(`User ${userId} has Google Calendar connected, access token exists: ${!!googleCalendarData.accessToken}`);
+
+    console.log(
+      `User ${userId} has Google Calendar connected, access token exists: ${!!googleCalendarData.accessToken}`
+    );
 
     // Try to get events from cache if not forcing refresh
     if (!forceRefresh) {
       const cachedEvents = await getEventsFromCache(userId);
       if (cachedEvents) {
-        console.log(`Returning ${cachedEvents.length} events from cache for user ${userId}`);
+        console.log(
+          `Returning ${cachedEvents.length} events from cache for user ${userId}`
+        );
         return NextResponse.json({ events: cachedEvents, fromCache: true });
       }
     }
 
     // Get user's OAuth client
     console.log(`Setting up OAuth client for user ${userId}`);
-    const oauth2Client = await getOAuth2ClientForUser(userId);
+
+    let oauth2Client;
+    try {
+      oauth2Client = await getOAuth2ClientForUser(userId);
+    } catch (authError) {
+      // Handle authentication expired error
+      if (authError.code === "AUTH_EXPIRED") {
+        console.log(
+          `Authentication expired for user ${userId}, returning reconnect response`
+        );
+        return NextResponse.json(
+          {
+            error: "Google Calendar authentication expired",
+            message: "Please reconnect your Google Calendar",
+            reconnectNeeded: true,
+            events: [],
+          },
+          { status: 401 }
+        );
+      }
+
+      // For other auth errors, log and return generic error
+      console.error(
+        `Authentication setup failed for user ${userId}:`,
+        authError
+      );
+      return NextResponse.json(
+        {
+          error: "Failed to authenticate with Google Calendar",
+          message: authError.message,
+          events: [],
+        },
+        { status: 500 }
+      );
+    }
+
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
     // Calculate more efficient date ranges
     const now = new Date();
     now.setHours(0, 0, 0, 0); // Start from beginning of today
-    
+
     const threeMonthsLater = new Date(now);
     threeMonthsLater.setMonth(now.getMonth() + 3);
 
-    console.log(`Fetching events from ${now.toISOString()} to ${threeMonthsLater.toISOString()}`);
+    console.log(
+      `Fetching events from ${now.toISOString()} to ${threeMonthsLater.toISOString()}`
+    );
 
     // Get events from primary calendar
     try {
@@ -222,11 +311,14 @@ export async function GET(request) {
         maxResults: 250, // Increased for better coverage
         singleEvents: true,
         orderBy: "startTime",
-        fields: "items(id,summary,description,location,start,end,colorId,organizer)", // Only get fields we need
+        fields:
+          "items(id,summary,description,location,start,end,colorId,organizer)", // Only get fields we need
       });
 
       const events = formatGoogleEvents(response.data.items || []);
-      console.log(`Fetched ${events.length} events from Google Calendar for user ${userId}`);
+      console.log(
+        `Fetched ${events.length} events from Google Calendar for user ${userId}`
+      );
 
       // Cache the events for future requests
       await cacheEvents(userId, events);
@@ -235,32 +327,40 @@ export async function GET(request) {
     } catch (apiError) {
       console.error("Google Calendar API error:", apiError);
       // Check if token is invalid and we need to reconnect
-      if (apiError.code === 401 || apiError.message?.includes("invalid_grant")) {
+      if (
+        apiError.code === 401 ||
+        apiError.message?.includes("invalid_grant")
+      ) {
         console.log("Token appears to be invalid, user may need to reconnect");
         // Update user record to show disconnected state
         await updateDoc(userRef, {
           "googleCalendar.connected": false,
-          "googleCalendar.error": "Authentication token expired or revoked. Please reconnect."
+          "googleCalendar.error":
+            "Authentication token expired or revoked. Please reconnect.",
         });
-        
+
         return NextResponse.json(
-          { 
-            error: "Google Calendar authentication expired", 
+          {
+            error: "Google Calendar authentication expired",
             message: "Please reconnect your Google Calendar",
             reconnectNeeded: true,
-            events: [] 
+            events: [],
           },
           { status: 401 }
         );
       }
-      
+
       throw apiError; // Let the outer catch handle other errors
     }
   } catch (error) {
     console.error("Error fetching Google Calendar events:", error);
 
     return NextResponse.json(
-      { error: "Failed to fetch Google Calendar events", message: error.message, events: [] },
+      {
+        error: "Failed to fetch Google Calendar events",
+        message: error.message,
+        events: [],
+      },
       { status: 500 }
     );
   }
