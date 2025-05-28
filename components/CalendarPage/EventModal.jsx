@@ -255,7 +255,7 @@ export default function EventModal({
                   </button>
                 </>
               )}
-              {isGoogleEvent && (
+              {/* {isGoogleEvent && (
                 <button
                   onClick={() =>
                     window.open(
@@ -267,7 +267,7 @@ export default function EventModal({
                 >
                   Open in Google Calendar
                 </button>
-              )}
+              )} */}
             </div>
           </>
         )}
