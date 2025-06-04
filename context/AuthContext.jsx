@@ -18,10 +18,12 @@ const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
   const router = useRouter();
 
   const logout = async () => {
     try {
+      setLoggingOut(true);
       await signOut(auth);
       console.log("User signed out");
       // Only redirect to signin if not on the homepage
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error logging out:", error);
+      setLoggingOut(false);
     }
   };
 
@@ -110,6 +113,7 @@ export const AuthProvider = ({ children }) => {
 
       if (user) {
         setUser(user);
+        setLoggingOut(false); // Reset logging out state when user is authenticated
         const isNewUser = await createUser(user);
         if (isNewUser) {
           await createCalendar(user.uid);
@@ -133,6 +137,9 @@ export const AuthProvider = ({ children }) => {
           );
           router.push("/auth/signin");
         }
+
+        // Reset logging out state after redirect
+        setLoggingOut(false);
       }
       setLoading(false);
     });
@@ -141,8 +148,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, loading, loggingOut, logout }}>
+      {!loading && !loggingOut && children}
+      {loggingOut && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="text-gray-600 font-medium">Signing out...</p>
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

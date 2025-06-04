@@ -286,6 +286,7 @@ export default function CalendarPage() {
       const eventRef = await addDoc(eventsCollection, {
         ...eventData,
         calendarId: calendarId,
+        userId: user.uid,
       });
 
       // Update calendar's events array

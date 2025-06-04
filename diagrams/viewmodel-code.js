@@ -104,9 +104,13 @@ export class CalendarViewModel {
     try {
       if (!this.calendarId) throw new Error("No calendar found");
 
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error("No user authenticated");
+
       const eventWithCalendarId = {
         ...eventData,
         calendarId: this.calendarId,
+        userId: currentUser.uid,
       };
 
       const eventsRef = collection(firestore, "events");

@@ -6,7 +6,14 @@ import PromptInput from "@/components/DashboardPage/PromptInput";
 import EventList from "@/components/DashboardPage/EventList";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot, orderBy, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+  getDocs,
+} from "firebase/firestore";
 
 const Dashboard = () => {
   const [events, setEvents] = useState([]);
@@ -16,35 +23,88 @@ const Dashboard = () => {
   const { user } = useAuth();
 
   useEffect(() => {
+    // Don't run effect if user is not loaded yet
+    if (!user) {
+      return;
+    }
+
     let unsubscribeEvents = null;
     let unsubscribeCalendars = null;
 
     const fetchData = async () => {
+      // Guard clause: return early if user is not authenticated
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       try {
+        // First, fetch calendars
         const calendarQuery = query(
           collection(db, "calendars"),
           where("userId", "==", user.uid)
         );
 
-        unsubscribeCalendars = onSnapshot(calendarQuery, (snapshot) => {
-          const calendarData = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setCalendars(calendarData);
-        });
+        const calendarSnapshot = await getDocs(calendarQuery);
+        const calendarData = calendarSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setCalendars(calendarData);
 
-        // Subscribe to upcoming events only
-        const now = new Date();
+        // Then fetch events - filter by user ID
         try {
           const eventsCollection = collection(db, "events");
-          const eventSnapshot = await getDocs(eventsCollection);
-          const eventsList = eventSnapshot.docs.map((doc) => ({
+
+          // For backward compatibility, also include events without userId that belong to user's calendars
+          const queries = [
+            // Get events directly associated with user
+            getDocs(query(eventsCollection, where("userId", "==", user.uid))),
+          ];
+
+          // Add calendar-based query only if user has calendars (for backward compatibility)
+          if (calendarData.length > 0) {
+            queries.push(
+              getDocs(
+                query(
+                  eventsCollection,
+                  where(
+                    "calendarId",
+                    "in",
+                    calendarData.map((cal) => cal.id)
+                  )
+                )
+              )
+            );
+          }
+
+          const results = await Promise.all(queries);
+          const userEventsSnapshot = results[0];
+          const calendarEventsSnapshot = results[1]; // Will be undefined if no calendar query
+
+          // Combine and deduplicate events
+          const allEventDocs = [
+            ...userEventsSnapshot.docs,
+            ...(calendarEventsSnapshot
+              ? calendarEventsSnapshot.docs.filter(
+                  (doc) =>
+                    // Only include calendar events that don't have userId or belong to current user
+                    !doc.data().userId || doc.data().userId === user.uid
+                )
+              : []),
+          ];
+
+          // Remove duplicates based on document ID
+          const uniqueEventDocs = allEventDocs.filter(
+            (doc, index, self) =>
+              self.findIndex((d) => d.id === doc.id) === index
+          );
+
+          const eventsList = uniqueEventDocs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
           setEvents(eventsList);
-
         } catch (error) {
           console.error("Error fetching events:", error);
         }
@@ -52,14 +112,13 @@ const Dashboard = () => {
         console.error("Error fetching data:", err);
         setError(err.message);
         setLoading(false);
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-    
+
     return () => {
       if (unsubscribeCalendars) unsubscribeCalendars();
       if (unsubscribeEvents) unsubscribeEvents();

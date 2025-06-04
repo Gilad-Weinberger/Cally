@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import CalendarHeader from "./components/CalendarHeader";
 import WeekView from "./components/WeekView";
 import MonthView from "./components/MonthView";
@@ -18,6 +18,9 @@ export default function CalendarView({
   hasGoogleCalendar = false,
   onGoogleCalendarToggle,
 }) {
+  // Track if we've already attempted to fetch Google Calendar events initially
+  const hasAttemptedGoogleFetch = useRef(false);
+
   // Initialize state from localStorage or defaults
   const [currentDate, setCurrentDate] = useState(() => {
     const savedDate =
@@ -53,23 +56,20 @@ export default function CalendarView({
     }
   }, [viewMode]);
 
-  // Fetch Google Calendar events on initial load if connection exists
+  // Fetch Google Calendar events on initial load if connection exists (ONE TIME ONLY)
   useEffect(() => {
     if (
       hasGoogleCalendar &&
       visibleCalendars.google &&
       onGoogleCalendarToggle &&
-      googleEvents.length === 0
+      !hasAttemptedGoogleFetch.current
     ) {
+      // Mark that we've attempted to fetch Google events
+      hasAttemptedGoogleFetch.current = true;
       // This will trigger a refresh of Google Calendar events
       onGoogleCalendarToggle(true);
     }
-  }, [
-    hasGoogleCalendar,
-    visibleCalendars.google,
-    onGoogleCalendarToggle,
-    googleEvents.length,
-  ]);
+  }, [hasGoogleCalendar, visibleCalendars.google]);
 
   // Common constants
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
