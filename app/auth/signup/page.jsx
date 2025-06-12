@@ -22,7 +22,7 @@ export default function SignUp() {
 
     try {
       await signUpWithEmail(email, password, name);
-      router.push("/dashboard");
+      router.push("/calendar");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -36,7 +36,7 @@ export default function SignUp() {
 
     try {
       await signInWithGoogle();
-      router.push("/dashboard");
+      router.push("/calendar");
     } catch (err) {
       setError(err.message);
     } finally {
